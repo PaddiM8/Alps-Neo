@@ -53,14 +53,17 @@
                 {{ with .Common.Trash }}{{ template "mailbox-link" . }}{{ end }}
                 {{ with .Common.Archive }}{{ template "mailbox-link" . }}{{ end }}
             </div>
-            <div class="additional-mailboxes">
-                {{ if .Additional }}
-                    {{ range .Additional }}
-                        {{ template "mailbox-link" . }}
+            <div>
+                <hr>
+                <div class="additional-mailboxes">
+                    {{ if .Additional }}
+                        {{ range .Additional }}
+                            {{ template "mailbox-link" . }}
+                        {{ end }}
                     {{ end }}
-                {{ end }}
+                </div>
+                <div class="mailbox-entry action">Create folder</div>
             </div>
-            <div class="mailbox-entry action">Create folder</div>
         {{ end }}
     </aside>
     <section id="mail-list" class="mail-list">

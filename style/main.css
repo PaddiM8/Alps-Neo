@@ -3,22 +3,24 @@
 }
 .mailboxes .mailbox-entry {
   padding: 0.4em 0.8em;
-  font-size: 1em;
+  font-size: 0.97em;
   border-radius: 0.2em;
-  margin-bottom: 0.1em;
   cursor: pointer;
 }
 .mailboxes .mailbox-entry.active, .mailboxes .mailbox-entry:hover {
   background-color: #E0E0E0;
+  outline: 1px solid white;
 }
 .mailboxes .mailbox-entry.active a, .mailboxes .mailbox-entry:hover a {
   color: #424242;
 }
 .mailboxes .mailbox-entry.action {
   color: #607D8B;
+  font-size: 0.87em;
+  padding: 0.5em 0.9em;
 }
 .mailboxes .mailbox-entry a {
-  color: #707070;
+  color: #606060;
   text-decoration: none;
 }
 
@@ -49,6 +51,13 @@
   background-color: #558B2F;
 }
 
+.mailboxes hr {
+  border: 0;
+  outline: 0;
+  border-top: 1px solid #D3D3D3;
+  margin: 0 0.4em 0.4em 0.4em;
+}
+
 .mail-list .item {
   display: grid;
   grid-template-areas: "mail-sender mail-time" "mail-subject mail-subject";
@@ -66,13 +75,13 @@
   grid-area: mail-sender;
   font-size: 0.8em;
   text-overflow: ellipsis;
-  color: #424242;
+  color: #757575;
 }
 .mail-list .item .time {
   grid-area: mail-time;
   font-size: 0.8em;
   text-align: right;
-  color: #424242;
+  color: #757575;
 }
 .mail-list .item .subject {
   grid-area: mail-subject;
@@ -140,6 +149,7 @@ body {
   grid-template-columns: 200px 300px minmax(0, 1fr);
   height: 100vh;
   box-sizing: border-box;
+  scrollbar-color: #757575 white;
   width: 100%;
   min-height: 100vh;
   margin: 0;
@@ -157,19 +167,16 @@ a {
 .mailboxes {
   grid-area: mailboxes;
   overflow-y: auto;
-  scrollbar-color: #757575 white;
 }
 
 .mail-list {
   grid-area: mail-list;
   overflow-y: auto;
-  scrollbar-color: #757575 white;
 }
 
 .mail-pane {
   grid-area: mail-content;
   overflow-y: auto;
-  scrollbar-color: #757575 white;
 }
 
 /*# sourceMappingURL=main.css.map */

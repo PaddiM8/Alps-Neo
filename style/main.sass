@@ -10,6 +10,7 @@ body
     grid-template-columns: 200px 300px minmax(0, 1fr)
     height: 100vh
     box-sizing: border-box
+    scrollbar-color: #757575 white
 
     width: 100%
     min-height: 100vh
@@ -25,12 +26,12 @@ a
 
 .mailboxes
     grid-area: mailboxes
-    @include values.scrollbar
+    overflow-y: auto
 
 .mail-list
     grid-area: mail-list
-    @include values.scrollbar
+    overflow-y: auto
 
 .mail-pane
     grid-area: mail-content
-    @include values.scrollbar
+    overflow-y: auto
