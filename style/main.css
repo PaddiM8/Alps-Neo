@@ -156,17 +156,20 @@ a {
 
 .mailboxes {
   grid-area: mailboxes;
-  overflow-y: scroll;
+  overflow-y: auto;
+  scrollbar-color: #757575 white;
 }
 
 .mail-list {
   grid-area: mail-list;
-  overflow-y: scroll;
+  overflow-y: auto;
+  scrollbar-color: #757575 white;
 }
 
 .mail-pane {
   grid-area: mail-content;
-  overflow-y: scroll;
+  overflow-y: auto;
+  scrollbar-color: #757575 white;
 }
 
 /*# sourceMappingURL=main.css.map */
