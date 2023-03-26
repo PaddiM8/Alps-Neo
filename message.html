@@ -1,0 +1,77 @@
+<div class="mail">
+    <section class="mail-header">
+        <h1>
+            {{ if .Message.Envelope.Subject }}
+                {{ .Message.Envelope.Subject }}
+            {{ else }}
+                No subject
+            {{ end }}
+        </h1>
+
+        <div class="from">
+            {{ template "addr-list" .Message.Envelope.From }}
+        </div>
+        <div class="to">
+            <span clsas="label">To:</span>
+            <span>{{ template "addr-list" .Message.Envelope.To }}</span>
+        </div>
+        <div class="time">
+            <span>{{ .Message.Envelope.Date | formatdate }}</span>
+        </div>
+
+        {{ if .Message.Envelope.Cc }}
+            <div class="cc">
+                <span clsas="label">Cc:</span>
+                <span>{{ template "addr-list" .Message.Envelope.Cc }}</span>
+            </div>
+        {{ end }}
+        {{ if .Message.Envelope.Bcc }}
+            <div class="bcc">
+                <span clsas="label">Bcc:</span>
+                <span>{{ template "addr-list" .Message.Envelope.Bcc }}</span>
+            </div>
+        {{ end }}
+    </section>
+
+    <section class="mail-body">
+        {{ if and .Extra.HasRemoteResources (not .Extra.RemoteResourcesAllowed) }}
+            <div class="remote-content">
+                <span>This message contains remote content, such as external images.</span>
+                <a href="?part={{.Part.PathString}}&allow-remote-resources=1">Load remote content</a>
+            </div>
+        {{end}}
+        {{ $attachments := .Message.Attachments }}
+        {{ if $attachments }}
+            <section class="parts">
+                <h3>Attachments</h3>
+                <ul>
+                    {{ range .Message.Attachments }}
+                <li>
+                    <a class="nav-link"
+                    {{if .IsText}}
+                        href="?part={{.PathString}}"
+                    {{else}}
+                        href="{{$.Message.URL}}/raw?part={{.PathString}}"
+                    {{end}}
+                    >
+                        {{- if .Filename -}}
+                            {{.Filename}}
+                        {{- else -}}
+                            (no filename)
+                        {{- end -}}
+                    </a> ({{ .MIMEType }}, {{ .SizeString }})
+                </li>
+                {{ end }}
+                </ul>
+            </section>
+        {{ end }}
+
+        <div class="content">
+            {{ if .View }}
+                {{ .View }}
+            {{ else }}
+                <p>Can't preview this message part.</p>
+            {{ end }}
+        </div>
+    </section>
+</div>

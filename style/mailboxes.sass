@@ -1,0 +1,49 @@
+@use "values" as values
+
+.mailboxes
+    & > *
+        margin: 0.4em 0.4em
+
+    .mailbox-entry
+        padding: 0.4em 0.8em
+        font-size: 1em
+        border-radius: values.$radius
+        margin-bottom: 0.1em
+        cursor: pointer
+
+        &.active, &:hover
+            background-color: values.$selected-color
+            a
+                color: #424242
+
+        &.action
+            color: values.$link-color-dark
+
+        a
+            color: #707070
+            text-decoration: none
+
+.mailbox-label
+    display: block
+    text-transform: uppercase
+    color: #707070
+    font-weight: 600
+    font-size: 0.8em
+
+.compose-button
+    @include values.button-shadow
+
+    width: calc(100% - 0.8em)
+    box-sizing: border-box
+    padding: 0.5em 0.9em
+    border: 0
+    border-radius: values.$radius
+
+    font-weight: 600
+    font-size: 1.1em
+    background-color: values.$primary-color
+    color: white
+    cursor: pointer
+
+    &:hover
+        background-color: values.$primary-color-hover

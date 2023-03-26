@@ -1,0 +1,36 @@
+@use "components/components"
+@use "mailboxes"
+@use "mail-list"
+@use "mail-content"
+@use "values" as values
+
+body
+    display: grid
+    grid-template-areas: "mailboxes mail-list mail-content"
+    grid-template-columns: 200px 300px minmax(0, 1fr)
+    height: 100vh
+    box-sizing: border-box
+
+    width: 100%
+    min-height: 100vh
+    margin: 0
+    padding: 0
+    font-family: Inter
+
+    & > *
+        border-right: 1px solid #D3D3D3
+
+a
+    color: values.$link-color
+
+.mailboxes
+    grid-area: mailboxes
+    overflow-y: scroll
+
+.mail-list
+    grid-area: mail-list
+    overflow-y: scroll
+
+.mail-pane
+    grid-area: mail-content
+    overflow-y: scroll

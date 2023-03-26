@@ -1,0 +1,51 @@
+@use "values" as values
+
+.mail-pane
+    padding: 1em
+
+.mail-header
+    display: grid
+    grid-template-areas: "subject subject" "from from" "to time"
+
+    h1
+        grid-area: subject
+        margin-top: 0
+        margin-bottom: 0.2em
+        font-weight: 600
+        font-size: 1.4em
+
+    .from
+        grid-area: from
+        font-size: 1.15em
+        margin-bottom: 0.6em
+
+    .to
+        grid-area: to
+        font-size: 0.9em
+
+    .time
+        grid-area: time
+        text-align: right
+        font-size: 0.9em
+        color: #707070
+
+.mail-body
+    border-top: 1px solid #D3D3D3
+    margin-top: 0.8em
+    padding-top: 0.8em
+
+    .content pre
+        white-space: pre-wrap
+
+    .remote-content
+        display: flex
+        flex-direction: column
+        margin-bottom: 0.6em
+        padding: 0.8em
+
+        border-radius: values.$radius
+        background-color: #EEEEEE
+        font-size: 0.9em
+
+        & > *:first-child
+            margin-bottom: 0.2em

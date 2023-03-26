@@ -1,0 +1,33 @@
+@use "values" as values
+
+.mail-list .item
+    display: grid
+    grid-template-areas: "mail-sender mail-time" "mail-subject mail-subject"
+    padding: 0.65em 0.75em
+    border-bottom: 1px solid #D3D3D3
+    cursor: pointer
+
+    & > *
+        padding: 0.15em
+
+    &.active, &:hover
+        background-color: values.$selected-color
+
+    .sender
+        grid-area: mail-sender
+        font-size: 0.8em
+        text-overflow: ellipsis
+        color: #424242
+
+    .time
+        grid-area: mail-time
+        font-size: 0.8em
+        text-align: right
+        color: #424242
+
+    .subject
+        grid-area: mail-subject
+        text-overflow: ellipsis
+        overflow: hidden
+        white-space: nowrap
+        font-size: 0.9em

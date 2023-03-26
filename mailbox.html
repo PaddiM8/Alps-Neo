@@ -1,0 +1,122 @@
+{{ define "mailbox-link" }}
+    {{ if not (.Info.HasAttr "\\Noselect") }}
+        <div class="mailbox-entry {{ if .Info.Active }}active{{ end }}">
+            <a href="{{.Info.URL}}">
+                {{- if eq .Info.Name "INBOX" -}}
+                    Inbox
+                {{- else -}}
+                    {{ .Info.Name }}
+                    {{- end -}}
+                {{- if .Info.HasAttr "\\HasChildren" }}/{{ end }}
+            </a>
+            {{ if .Status }}
+                {{ if .Status.Unseen }}
+                    <span class="unseen">({{ .Status.Unseen }})</span>
+                {{ end }}
+            {{ end }}
+        </div>
+    {{ else }}
+        <div class="noselect">
+            {{ .Info.Name }}{{- if .Info.HasAttr "\\HasChildren" }}/{{ end }}
+        </div>
+    {{ end }}
+{{ end }}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
+    {{- if eq (index .GlobalData.Path 0) "mailbox" }}
+    <meta id="refresh" http-equiv="refresh" content="60">
+    {{ end -}}
+    <title>{{ .GlobalData.Title }}</title>
+    <link rel="stylesheet" href="/themes/sane/style/main.css">
+    <link rel="icon" type="image/png" href="/themes/alps/assets/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/themes/alps/assets/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/themes/alps/assets/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/themes/alps/assets/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/themes/alps/assets/favicon-128.png" sizes="128x128" />
+</head>
+
+<body>
+    <aside class="mailboxes">
+        <button class="compose-button">Compose</button>
+        <span class="mailbox-label">{{ .GlobalData.Username }}</span>
+        {{ with .CategorizedMailboxes }}
+            <div class="standard-mailboxes">
+                {{ with .Common.Inbox }}{{ template "mailbox-link" . }}{{ end }}
+                {{ with .Common.Drafts }}{{ template "mailbox-link" . }}{{ end }}
+                {{ with .Common.Sent }}{{ template "mailbox-link" . }}{{ end }}
+                {{ with .Common.Junk }}{{ template "mailbox-link" . }}{{ end }}
+                {{ with .Common.Trash }}{{ template "mailbox-link" . }}{{ end }}
+                {{ with .Common.Archive }}{{ template "mailbox-link" . }}{{ end }}
+            </div>
+            <div class="additional-mailboxes">
+                {{ if .Additional }}
+                    {{ range .Additional }}
+                        {{ template "mailbox-link" . }}
+                    {{ end }}
+                {{ end }}
+            </div>
+            <div class="mailbox-entry action">Create folder</div>
+        {{ end }}
+    </aside>
+    <section id="mail-list" class="mail-list">
+        {{ range .Messages }}
+            {{ $classes := "item" }}
+            {{ if not (.HasFlag "\\Seen") }}
+                {{ $classes = printf "%s %s" $classes "unread" }}
+            {{ end }}
+            {{ if (.HasFlag "\\Deleted") }}
+                {{ $classes = printf "%s %s" $classes "deleted" }}
+            {{ end }}
+
+            {{ $selectedPart := 0 }}
+            {{ $selectedPartMime := "text/plain" }}
+            {{ if eq .BodyStructure.MIMEType "multipart" }}
+                {{ range $i, $part := .BodyStructure.Parts }}
+                    {{ $mime := print $part.MIMEType "/" $part.MIMESubType }}
+                    {{ if eq $mime "text/html" }}
+                        {{ $selectedPart = $i }}
+                        {{ $selectedPartMime = $mime }}
+                    {{ end }}
+                {{ end }}
+            {{ end }}
+
+            <div class="item {{ $classes }}"
+                 data-uid="{{ .Uid }}"
+                 {{ if ne $selectedPart 0 }}data-part="{{ $selectedPart }}"{{ end }}>
+                {{ if .HasFlag "\\Answered" }}<span class="replied">↩</span>{{ end }}
+                {{ if .HasFlag "$Forwarded" }}<span class="forwarded">↪</span>{{ end }}
+
+                <span class="sender">
+                    {{ range .Envelope.From }}
+                        {{ if .PersonalName }}
+                            {{ .PersonalName }}
+                        {{ else }}
+                            {{ .MailboxName }}@{{ .HostName }}
+                        {{ end }}
+                    {{ end }}
+                </span>
+                <span class="time">
+                    {{ .Envelope.Date | humantime }}
+                </span>
+                <span class="subject">
+                    {{ if .Envelope.Subject }}
+                        {{ .Envelope.Subject }}
+                    {{ else }}
+                        No subject
+                    {{ end }}
+                </span>
+            </div>
+        {{ end }}
+    </section>
+    <section id="mail-pane" class="mail-pane">
+    </section>
+    <script src="/themes/sane/scripts/mailbox.js"></script>
+</body>
+
+</html>
