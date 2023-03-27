@@ -42,7 +42,7 @@ function removeInputBox(input, box) {
     }
 }
 
-function initMultiInputs() {
+export function init() {
     for (const multiInput of document.querySelectorAll(".multi-input")) {
         const input = multiInput.querySelector("input");
         input.setAttribute("data-placeholder", input.placeholder);
@@ -64,9 +64,3 @@ function initMultiInputs() {
         });
     }
 }
-
-function init() {
-    initMultiInputs();
-}
-
-init();

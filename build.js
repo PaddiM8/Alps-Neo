@@ -4,13 +4,17 @@ const sass = require("sass");
 const fs = require("fs/promises");
 
 chokidar.watch("./scripts").on("all", async (event, path) => {
-    await esbuild.build({
-        entryPoints: ["scripts/main.js"],
-        bundle: true,
-        outfile: "out/out.js",
-    });
+    try {
+        await esbuild.build({
+            entryPoints: ["scripts/main.js"],
+            bundle: true,
+            outfile: "out/out.js",
+        });
 
-    console.log("Built JavaScript");
+        console.log("Built JavaScript");
+    } catch (err) {
+        console.error(err);
+    }
 });
 
 chokidar.watch("./style").on("all", async (event, path) => {

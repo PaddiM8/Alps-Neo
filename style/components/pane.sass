@@ -29,7 +29,6 @@
             line-height: 0.5
             padding: 0.4em
             border-radius: values.$radius
-            margin-left: 0.1em
             cursor: pointer
 
             &:hover
@@ -37,6 +36,12 @@
 
 .pane-content
     overflow-y: auto
+
+    .buttons
+        margin-left: auto
+
+        & > *
+            margin-left: 0.4em
 
 .pane .resizer
     position: absolute

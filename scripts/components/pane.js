@@ -48,6 +48,9 @@ function initPane(pane) {
     });
 }
 
-for (const pane of document.getElementsByClassName("pane")) {
-    initPane(pane);
+
+export function init() {
+    for (const pane of document.getElementsByClassName("pane")) {
+        initPane(pane);
+    }
 }
