@@ -7,7 +7,9 @@ let lastLoadSuccessful = true;
 let mailboxName = "Inbox";
 
 async function loadEntries() {
-    const page = lastLoadedPage + 1 ?? 0;
+    const page = lastLoadedPage == null
+        ? 0
+        : lastLoadedPage + 1;
 
     try {
         const previousLength = mailList.children.length;
@@ -42,7 +44,7 @@ async function selectEntry(entry, remoteContent) {
     const uid = entry.getAttribute("data-uid");
     const part = +entry.getAttribute("data-part") + 1;
     const remoteContentString = remoteContent ? "&allow-remote-resources=1" : "";
-    const mail = await fetch(`/message/INBOX/${uid}?part=${part}${remoteContentString}`);
+    const mail = await fetch(`/message/${mailboxName}/${uid}?part=${part}${remoteContentString}`);
     mailDisplay.innerHTML = await mail.text();
     const remoteContentButton = mailDisplay.querySelector(".remote-content-button")
     if (remoteContentButton) {
