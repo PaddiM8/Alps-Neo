@@ -14,7 +14,11 @@ chokidar.watch("./scripts").on("all", async (event, path) => {
 });
 
 chokidar.watch("./style").on("all", async (event, path) => {
-    const result = await sass.compile("style/main.sass");
-    await fs.writeFile("out/main.css", result.css);
-    console.log("Built CSS");
+    try {
+        const result = await sass.compile("style/main.sass");
+        await fs.writeFile("out/main.css", result.css);
+        console.log("Built CSS");
+    } catch (err) {
+        console.error(err);
+    }
 });
