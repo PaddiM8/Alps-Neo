@@ -1,24 +1,38 @@
 let resizing = false;
 
-function clearPane(pane) {
+export function clear(pane) {
     for (const input of pane.querySelectorAll("input, textarea")) {
+        if (input.classList.contains("no-clear")) {
+            continue;
+        }
+
         input.value = "";
+        if (input.parentElement.classList.contains("multi-input")) {
+            input.placeholder = input.getAttribute("data-placeholder");
+
+            while (input.previousSibling) {
+                input.parentElement.removeChild(input.parentElement.firstChild);
+            }
+        }
     }
+}
+
+export function close(pane) {
+    pane.classList.add("hidden");
+    pane.classList.remove("minimised");
+    clear(pane);
+}
+
+export function minimise(pane) {
+    pane.classList.add("minimised");
 }
 
 function initPane(pane) {
     const closeButton = pane.querySelector(".close");
-    closeButton.addEventListener("click", () => {
-        pane.classList.add("hidden");
-        pane.classList.remove("minimised");
-        clearPane(pane);
-    });
+    closeButton.addEventListener("click", () => close(pane));
 
     const minimiseButton = pane.querySelector(".minimise");
-    minimiseButton.addEventListener("click", () => {
-        pane.classList.add("minimised");
-        pane.style.height = "";
-    });
+    minimiseButton.addEventListener("click", () => minimise(pane));
 
     const header = pane.querySelector(".pane-header");
     header.addEventListener("click", e => {

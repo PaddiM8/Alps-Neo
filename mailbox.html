@@ -86,18 +86,19 @@
                 <div class="pane-content">
                     <div class="input-grid">
                         <span class="input-label">To</span>
-                        <div class="multi-input">
-                            <input type="email" id="input-to" placeholder="john@smith.com" />
+                        <div class="input-to multi-input">
+                            <input type="email" placeholder="john@smith.com" />
                         </div>
                         <span class="input-label">From</span>
-                        <input type="text" id="input-from" placeholder="your@email.com" value="{{ .GlobalData.Username }}" />
+                        <input type="text" class="input-from no-clear" placeholder="your@email.com" value="{{ .GlobalData.Username }}" />
                         <span class="input-label">Cc</span>
-                        <div class="multi-input">
-                            <input type="email" id="input-cc" placeholder="sven@svensson.se" />
+                        <div class="input-cc multi-input">
+                            <input type="email" placeholder="sven@svensson.se" />
                         </div>
                     </div>
-                    <input type="text" id="input-subject" placeholder="Subject..." />
-                    <textarea id="input-message"></textarea>
+                    <input type="text" class="input-subject" placeholder="Subject..." />
+                    <textarea class="input-message"></textarea>
+                    <span class="error hidden">An error occurred.</span>
                     <div class="buttons">
                         <button>Save as Draft</button>
                         <button class="primary">Send</button>

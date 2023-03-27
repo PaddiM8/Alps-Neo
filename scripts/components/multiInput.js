@@ -42,6 +42,12 @@ function removeInputBox(input, box) {
     }
 }
 
+export function getValues(element) {
+    return Array.from(element.children)
+        .filter(x => x.classList.contains("input-box"))
+        .map(x => x.querySelector(".content").textContent);
+}
+
 export function init() {
     for (const multiInput of document.querySelectorAll(".multi-input")) {
         const input = multiInput.querySelector("input");
