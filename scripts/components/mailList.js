@@ -4,13 +4,14 @@ const shadowContent = document.createElement("div");
 let lastSelectedEntry = null;
 let lastLoadedPage = null;
 let lastLoadSuccessful = true;
+let mailboxName = "Inbox";
 
 async function loadEntries() {
     const page = lastLoadedPage + 1 ?? 0;
 
     try {
         const previousLength = mailList.children.length;
-        const entries = await fetch(`/mailbox/INBOX?page=${page}`);
+        const entries = await fetch(`/mailbox/${mailboxName}?page=${page}`);
         mailList.insertAdjacentHTML("beforeend", await entries.text());
         lastLoadedPage = page;
 
@@ -27,6 +28,7 @@ async function loadEntries() {
 
 function shouldLoadMore() {
     return lastLoadSuccessful &&
+        mailList.children.length > 0 &&
         Math.abs(mailList.scrollHeight - mailList.scrollTop - mailList.clientHeight) < 10;
 }
 
@@ -63,19 +65,27 @@ async function selectEntry(entry, remoteContent) {
     lastSelectedEntry = entry;
 }
 
-export async function init() {
+export async function loadMailbox(name) {
+    mailboxName = name;
+    mailList.innerHTML = "";
+    lastSelectedEntry = null;
+    lastLoadedPage = null;
+    lastLoadSuccessful = true;
+
     await loadEntries();
 
     while (shouldLoadMore())
         await loadEntries();
 
+    if (mailList.children.length > 0) {
+        await selectEntry(mailList.firstElementChild);
+    }
+}
+
+export async function init() {
     mailList.addEventListener("scroll", async () => {
         if (shouldLoadMore()) {
             await loadEntries();
         }
     });
-
-    if (mailList.children) {
-        selectEntry(mailList.firstElementChild);
-    }
 }

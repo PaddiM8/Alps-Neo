@@ -1,14 +1,11 @@
 {{ define "mailbox-link" }}
     {{ if not (.Info.HasAttr "\\Noselect") }}
-        <div class="mailbox-entry {{ if .Info.Active }}active{{ end }}">
-            <a href="{{ .Info.URL }}">
-                {{- if eq .Info.Name "INBOX" -}}
-                    Inbox
-                {{- else -}}
-                    {{ .Info.Name }}
-                {{- end -}}
-                {{- if .Info.HasAttr "\\HasChildren" }}/{{ end }}
-            </a>
+        {{ $name := .Info.Name }}
+        {{- if eq $name "INBOX" -}}
+            {{ $name = "Inbox" }}
+        {{- end -}}
+        <div class="mailbox-entry" data-name="{{ $name }}">
+            {{ $name }}{{- if .Info.HasAttr "\\HasChildren" }}/{{ end }}
             {{ if .Status }}
                 {{ if .Status.Unseen }}
                     <span class="unseen">({{ .Status.Unseen }})</span>
@@ -45,11 +42,15 @@
         <h1>Header placeholder</h1>
     </header>
     <main>
-        <aside class="mailboxes">
+        {{ $mailboxName := .Mailbox.Name }}
+        {{- if eq $mailboxName "INBOX" -}}
+            {{ $mailboxName = "Inbox" }}
+        {{- end -}}
+        <aside id="mailboxes" class="mailboxes" data-selected="{{ $mailboxName }}">
             <button id="compose-button" class="compose-button">Compose</button>
             <span class="mailbox-label">{{ .GlobalData.Username }}</span>
             {{ with .CategorizedMailboxes }}
-                <div class="standard-mailboxes">
+                <div id="standard-mailboxes" class="standard-mailboxes">
                     {{ with .Common.Inbox }}{{ template "mailbox-link" . }}{{ end }}
                     {{ with .Common.Drafts }}{{ template "mailbox-link" . }}{{ end }}
                     {{ with .Common.Sent }}{{ template "mailbox-link" . }}{{ end }}
@@ -75,7 +76,7 @@
         <div class="preview">
             <section id="mail-display" class="mail-display">
             </section>
-            <section id="compose-pane" class="pane compose-pane">
+            <section id="compose-pane" class="pane compose-pane hidden">
                 <div class="pane-header">
                     <span class="title">Write an Email</span>
                     <div class="buttons">
