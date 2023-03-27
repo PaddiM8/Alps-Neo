@@ -1,0 +1,52 @@
+@use "../values" as values
+
+input, textarea
+    padding: 0.4em 0.6em
+    border: 1px solid #D3D3D3
+    border-radius: values.$radius
+
+.multi-input:focus-within, input:focus, textarea:focus
+    border: 1px solid cornflowerblue
+    outline: 1px solid cornflowerblue
+
+.multi-input
+    display: flex
+    flex-direction: row
+    border: 1px solid #D3D3D3
+    border-radius: values.$radius
+
+    .input-box
+        display: flex
+        align-items: baseline
+        padding: 0.2em 0.4em
+        font-size: 0.8em
+        margin: 0.2em
+        background-color: #CFD8DC
+        border-radius: values.$radius
+        box-sizing: border-box
+        cursor: pointer
+
+        .remove
+            display: block
+            $size: 1.3em
+            width: $size
+            height: $size
+            line-height: $size
+
+            margin-left: 0.4em
+            border-radius: 100%
+
+            font-size: 0.9em
+            text-align: center
+            cursor: pointer
+
+            &:hover
+                background-color: #D84315
+                color: white
+
+    input
+        flex-grow: 1
+        border: 0
+
+        &:focus
+            outline: 0

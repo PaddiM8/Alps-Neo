@@ -41,35 +41,71 @@
 </head>
 
 <body>
-    <aside class="mailboxes">
-        <button class="compose-button">Compose</button>
-        <span class="mailbox-label">{{ .GlobalData.Username }}</span>
-        {{ with .CategorizedMailboxes }}
-            <div class="standard-mailboxes">
-                {{ with .Common.Inbox }}{{ template "mailbox-link" . }}{{ end }}
-                {{ with .Common.Drafts }}{{ template "mailbox-link" . }}{{ end }}
-                {{ with .Common.Sent }}{{ template "mailbox-link" . }}{{ end }}
-                {{ with .Common.Junk }}{{ template "mailbox-link" . }}{{ end }}
-                {{ with .Common.Trash }}{{ template "mailbox-link" . }}{{ end }}
-                {{ with .Common.Archive }}{{ template "mailbox-link" . }}{{ end }}
-            </div>
-            <div>
-                <hr>
-                <div class="additional-mailboxes">
-                    {{ if .Additional }}
-                        {{ range .Additional }}
-                            {{ template "mailbox-link" . }}
-                        {{ end }}
-                    {{ end }}
+    <header>
+        <h1>Header placeholder</h1>
+    </header>
+    <main>
+        <aside class="mailboxes">
+            <button id="compose-button" class="compose-button">Compose</button>
+            <span class="mailbox-label">{{ .GlobalData.Username }}</span>
+            {{ with .CategorizedMailboxes }}
+                <div class="standard-mailboxes">
+                    {{ with .Common.Inbox }}{{ template "mailbox-link" . }}{{ end }}
+                    {{ with .Common.Drafts }}{{ template "mailbox-link" . }}{{ end }}
+                    {{ with .Common.Sent }}{{ template "mailbox-link" . }}{{ end }}
+                    {{ with .Common.Junk }}{{ template "mailbox-link" . }}{{ end }}
+                    {{ with .Common.Trash }}{{ template "mailbox-link" . }}{{ end }}
+                    {{ with .Common.Archive }}{{ template "mailbox-link" . }}{{ end }}
                 </div>
-                <div class="mailbox-entry action">Create folder</div>
-            </div>
-        {{ end }}
-    </aside>
-    <section id="mail-list" class="mail-list">
-    </section>
-    <section id="mail-pane" class="mail-pane">
-    </section>
+                <div>
+                    <hr>
+                    <div class="additional-mailboxes">
+                        {{ if .Additional }}
+                            {{ range .Additional }}
+                                {{ template "mailbox-link" . }}
+                            {{ end }}
+                        {{ end }}
+                    </div>
+                    <div class="mailbox-entry action">Create folder</div>
+                </div>
+            {{ end }}
+        </aside>
+        <section id="mail-list" class="mail-list">
+        </section>
+        <div class="preview">
+            <section id="mail-display" class="mail-display">
+            </section>
+            <section id="compose-pane" class="pane compose-pane">
+                <div class="pane-header">
+                    <span class="title">Write an Email</span>
+                    <div class="buttons">
+                        <span class="minimise">⎽</span>
+                        <span class="close">×</span>
+                    </div>
+                </div>
+                <div class="pane-content">
+                    <div class="input-grid">
+                        <span class="input-label">To</span>
+                        <div class="multi-input">
+                            <input type="email" id="input-to" placeholder="john@smith.com" />
+                        </div>
+                        <span class="input-label">From</span>
+                        <input type="text" id="input-from" placeholder="your@email.com" value="{{ .GlobalData.Username }}" />
+                        <span class="input-label">Cc</span>
+                        <div class="multi-input">
+                            <input type="email" id="input-cc" placeholder="sven@svensson.se" />
+                        </div>
+                    </div>
+                    <input type="text" id="input-subject" placeholder="Subject..." />
+                    <textarea id="input-message"></textarea>
+                    <div class="buttons">
+                        <button>Save as Draft</button>
+                        <button class="primary">Send</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
     <script src="/themes/sane/out/out.js"></script>
 </body>
 

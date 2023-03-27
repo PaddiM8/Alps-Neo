@@ -1,0 +1,22 @@
+@use "../values" as values
+
+button
+    @include values.button-shadow-bright
+    padding: 0.4em 0.8em
+    border: 0
+    font-size: 1em
+    background-color: #D3D3D3
+    color: black
+    border-radius: values.$radius
+    cursor: pointer
+
+    &:hover
+        background-color: #BDBDBD
+
+button.primary
+    @include values.button-shadow
+    color: white
+    background-color: values.$primary-color
+
+    &:hover
+        background-color: values.$primary-color-hover

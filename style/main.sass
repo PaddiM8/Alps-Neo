@@ -2,21 +2,37 @@
 @use "mailboxes"
 @use "mail-list"
 @use "mail-content"
+@use "compose"
 @use "values" as values
 
-body
-    display: grid
-    grid-template-areas: "mailboxes mail-list mail-content"
-    grid-template-columns: 200px 300px minmax(0, 1fr)
-    height: 100vh
-    box-sizing: border-box
-    scrollbar-color: #757575 white
+$header-height: 3em
 
+body
+    scrollbar-color: #757575 white
     width: 100%
-    min-height: 100vh
+    height: 100vh
+    max-height: 100%
     margin: 0
     padding: 0
     font-family: Inter
+
+header
+    display: flex
+    align-items: center
+    height: $header-height
+    box-sizing: border-box
+    background-color: #BDBDBD
+    padding: 0.4em 1em
+
+    h1
+        margin: 0
+
+main
+    display: grid
+    height: calc(100vh - $header-height)
+    grid-template-columns: 200px 300px minmax(0, 1fr)
+    grid-template-rows: minmax(0, 1fr)
+    box-sizing: border-box
 
     & > *
         border-right: 1px solid #D3D3D3
@@ -24,14 +40,22 @@ body
 a
     color: values.$link-color
 
+.hidden
+    display: none
+
 .mailboxes
-    grid-area: mailboxes
     overflow-y: auto
 
 .mail-list
-    grid-area: mail-list
     overflow-y: auto
 
-.mail-pane
-    grid-area: mail-content
-    overflow-y: auto
+.preview
+    display: grid
+    grid-template-rows: auto 1fr
+
+    .mail-display
+        overflow-y: auto
+
+    .compose-pane
+        height: 58vh
+        min-height: 16em

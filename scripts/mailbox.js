@@ -1,5 +1,7 @@
 const mailList = document.getElementById("mail-list");
-const mailPane = document.getElementById("mail-pane");
+const mailDisplay = document.getElementById("mail-display");
+const composeButton = document.getElementById("compose-button");
+const composePane = document.getElementById("compose-pane");
 const shadowContent = document.createElement("div");
 let lastSelectedEntry = null;
 let lastLoadedPage = null;
@@ -9,9 +11,17 @@ async function loadEntries() {
     const page = lastLoadedPage + 1 ?? 0;
 
     try {
+        const previousLength = mailList.children.length;
         const entries = await fetch(`/mailbox/INBOX?page=${page}`);
         mailList.insertAdjacentHTML("beforeend", await entries.text());
         lastLoadedPage = page;
+
+        for (let i = previousLength; i < mailList.children.length; i++) {
+            const entry = mailList.children[i];
+            entry.onclick = async () => {
+                await selectEntry(entry);
+            }
+        }
     } catch {
         lastLoadSuccessful = false;
     }
@@ -33,15 +43,15 @@ async function selectEntry(entry, remoteContent) {
     const part = +entry.getAttribute("data-part") + 1;
     const remoteContentString = remoteContent ? "&allow-remote-resources=1" : "";
     const mail = await fetch(`/message/INBOX/${uid}?part=${part}${remoteContentString}`);
-    mailPane.innerHTML = await mail.text();
-    const remoteContentButton = mailPane.querySelector(".remote-content-button")
+    mailDisplay.innerHTML = await mail.text();
+    const remoteContentButton = mailDisplay.querySelector(".remote-content-button")
     if (remoteContentButton) {
         remoteContentButton.onclick = () => {
             selectEntry(entry, true);
         };
     }
 
-    const iframe = mailPane.querySelector("iframe");
+    const iframe = mailDisplay.querySelector("iframe");
     if (iframe) {
         const content = iframe.srcdoc;
         shadowContent.innerHTML = content;
@@ -61,20 +71,18 @@ async function init() {
     while (shouldLoadMore())
         await loadEntries();
 
-    mailList.onscroll = async () => {
+    mailList.addEventListener("scroll", async () => {
         if (shouldLoadMore()) {
             await loadEntries();
         }
-    };
+    });
+
+    composeButton.addEventListener("click", () => {
+        composePane.classList.remove("hidden");
+    });
 
     if (mailList.children) {
         selectEntry(mailList.firstElementChild);
-    }
-
-    for (const entry of mailList.children) {
-        entry.onclick = async () => {
-            await selectEntry(entry);
-        }
     }
 }
 
