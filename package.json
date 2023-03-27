@@ -1,0 +1,19 @@
+{
+    "name": "sane",
+    "version": "1.0.0",
+    "description": "A simple and modern theme for Alps webmail",
+    "scripts": {
+        "build": "esbuild scripts/main.js --bundle --sourcemap --outfile=out/out.js",
+        "dist": "esbuild scripts/main.js --bundle --minify --outfile=out/out.js",
+        "watch": "node ./build.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "PaddiM8",
+    "license": "MIT",
+    "dependencies": {
+        "esbuild": "0.17.14"
+    },
+    "devDependencies": {
+        "sass": "^1.60.0"
+    }
+}
