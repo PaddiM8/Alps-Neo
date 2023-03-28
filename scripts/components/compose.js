@@ -69,5 +69,5 @@ async function submit(isDraft = false) {
 
 export async function init() {
     composePane.querySelector("button.as-draft").addEventListener("click", async () => await submit(true));
-    composePane.querySelector("button.primary").addEventListener("click", submit);
+    composePane.querySelector("button.send").addEventListener("click", submit);
 }

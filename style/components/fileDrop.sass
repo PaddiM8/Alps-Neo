@@ -1,0 +1,69 @@
+@use "../values" as values
+
+.file-drop
+    position: relative
+
+    .list
+        overflow-y: scroll
+
+        &:empty::after
+            position: absolute
+            top: 50%
+            left: 50%
+            transform: translate(-50%, -50%)
+            font-size: 0.8em
+            color: #424242
+            content: "Drop files here"
+
+    &.dragging-over .list::before
+        position: absolute
+        content: ''
+        $border-margin: 0.2em
+        width: calc(100% - #{$border-margin * 2})
+        height: calc(100% - #{$border-margin * 2})
+        top: $border-margin
+        left: $border-margin
+        box-sizing: border-box
+        border: 2px dashed #BDBDBD
+        border-radius: values.$radius
+
+    .file
+        display: flex
+        padding: 0.5em 0.8em
+        font-size: 0.8em
+        background-color: #EEEEEE
+        border-bottom: values.$border
+
+        & > *
+            margin-right: 0.4em
+
+            &:last-child
+                margin-left: 0
+
+        .name
+            overflow: hidden
+            white-space: nowrap
+            text-overflow: ellipsis
+            word-break: break-all
+
+        .size
+            margin-left: auto
+            color: values.$gray-text-color
+            white-space: nowrap
+
+        .remove
+            display: block
+            $size: 1.15em
+            font-size: 1.1em
+            width: $size
+            height: $size
+            line-height: $size
+            text-align: center
+            margin: auto 0
+            flex-shrink: 0
+            border-radius: 100%
+            cursor: pointer
+
+            &:hover
+                background-color: values.$red
+                color: white

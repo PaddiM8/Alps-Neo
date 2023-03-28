@@ -76,7 +76,7 @@
         <div class="preview">
             <section id="mail-display" class="mail-display">
             </section>
-            <section id="compose-pane" class="pane compose-pane hidden">
+            <section id="compose-pane" class="pane compose-pane">
                 <div class="pane-header">
                     <span class="title">Write an Email</span>
                     <div class="buttons">
@@ -85,16 +85,23 @@
                     </div>
                 </div>
                 <div class="pane-content">
-                    <div class="input-grid">
-                        <span class="input-label">To</span>
-                        <div class="input-to multi-input">
-                            <input type="email" placeholder="john@smith.com" />
+                    <div class="upper-area">
+                        <div class="input-grid">
+                            <span class="input-label">To</span>
+                            <div class="input-to multi-input">
+                                <input type="email" placeholder="john@smith.com" />
+                            </div>
+                            <span class="input-label">From</span>
+                            <input type="text" class="input-from no-clear" placeholder="your@email.com" value="{{ .GlobalData.Username }}" />
+                            <span class="input-label">Cc</span>
+                            <div class="input-cc multi-input">
+                                <input type="email" placeholder="sven@svensson.se" />
+                            </div>
                         </div>
-                        <span class="input-label">From</span>
-                        <input type="text" class="input-from no-clear" placeholder="your@email.com" value="{{ .GlobalData.Username }}" />
-                        <span class="input-label">Cc</span>
-                        <div class="input-cc multi-input">
-                            <input type="email" placeholder="sven@svensson.se" />
+                        <div class="attachment-area file-drop">
+                            <h3>Attachments</h3>
+                            <button class="primary">Browse</button>
+                            <div class="attachment-list list"></div>
                         </div>
                     </div>
                     <input type="text" class="input-subject" placeholder="Subject..." />
@@ -102,7 +109,7 @@
                     <span class="error hidden">An error occurred.</span>
                     <div class="buttons">
                         <button class="as-draft">Save as Draft</button>
-                        <button class="primary">Send</button>
+                        <button class="primary send">Send</button>
                     </div>
                 </div>
             </section>
