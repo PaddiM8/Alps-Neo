@@ -1,3 +1,5 @@
+import * as fileDrop from "./fileDrop";
+
 let resizing = false;
 
 export function clear(pane) {
@@ -14,6 +16,10 @@ export function clear(pane) {
                 input.parentElement.removeChild(input.parentElement.firstChild);
             }
         }
+    }
+
+    for (const drop of pane.querySelectorAll(".file-drop")) {
+        fileDrop.clear(drop);
     }
 }
 

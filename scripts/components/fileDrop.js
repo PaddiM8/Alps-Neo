@@ -8,7 +8,18 @@ function humanFileSize(number) {
     }
 }
 
-function addFile(fileDrop, fileInfo) {
+async function removeFile(fileDrop, fileElement) {
+    const removeClient = new XMLHttpRequest();
+    const uuid = fileElement.getAttribute("data-uuid");
+    if (uuid) {
+        removeClient.open("POST", `/compose/attachment/${uuid}/remove`);
+        removeClient.send();
+    }
+
+    fileDrop.querySelector(".list").removeChild(fileElement);
+}
+
+async function addFile(fileDrop, fileInfo) {
     const fileList = fileDrop.querySelector(".list");
     const file = document.createElement("span");
     file.className = "file";
@@ -22,26 +33,61 @@ function addFile(fileDrop, fileInfo) {
     const remove = document.createElement("span");
     remove.className = "remove"
     remove.innerHTML = "×";
-    remove.addEventListener("click", () => {
-        fileList.removeChild(file);
-    });
 
     file.append(name, size, remove);
     fileList.appendChild(file);
+
+    // Upload the file and update the progress bar
+    const client = new XMLHttpRequest();
+    client.open("POST", "/compose/attachment");
+
+    client.upload.onprogress = progress => {
+        file.style.setProperty(
+            "--progress",
+            (progress.loaded / progress.total) * 100 + "%"
+        );
+    };
+
+    client.onloadend = () => {
+        if (client.status == 200) {
+            try {
+                const response = JSON.parse(client.responseText);
+                file.setAttribute("data-uuid", response[0]);
+                file.classList.add("uploaded");
+            } catch {
+                file.classList.add("failed");
+            }
+        } else {
+            file.classList.add("failed");
+        }
+    };
+
+    remove.addEventListener("click", async () => {
+        if (client.LOADING) {
+            client.abort();
+        }
+
+        await removeFile(fileDrop, file);
+    });
+
+
+    let formData = new FormData();
+    formData.append("attachments", fileInfo);
+    client.send(formData);
 }
 
-function browsedFiles(fileDrop, input) {
+async function browsedFiles(fileDrop, input) {
     for (const file of input.files) {
-        addFile(fileDrop, file);
+        await addFile(fileDrop, file);
     }
 }
 
-function fileDropped(fileDrop, event) {
+async function fileDropped(fileDrop, event) {
     event.preventDefault();
 
     for (const item of event.dataTransfer.items) {
         if (item.kind == "file") {
-            addFile(fileDrop, item.getAsFile());
+            await addFile(fileDrop, item.getAsFile());
         }
     }
 
@@ -55,6 +101,22 @@ function draggedOver(fileDrop, event) {
 
 function draggedAway(fileDrop) {
     fileDrop.classList.remove("dragging-over");
+}
+
+export function clearUuids(fileDrop) {
+    const list = fileDrop.querySelector(".list");
+    for (const attachment of list.children) {
+        attachment.setAttribute("data-uuid", "");
+    }
+}
+
+export async function clear(fileDrop) {
+    const list = fileDrop.querySelector(".list");
+    for (const attachment of list.children) {
+        await removeFile(fileDrop, attachment);
+    }
+
+    list.innerHTML = "";
 }
 
 export function init() {
@@ -72,10 +134,10 @@ export function init() {
         fileDrop.querySelector("button").addEventListener("click", () => {
             input.click();
         });
-        fileDrop.addEventListener("drop", e => fileDropped(fileDrop, e));
+        fileDrop.addEventListener("drop", async e => await fileDropped(fileDrop, e));
         fileDrop.addEventListener("dragover", e => draggedOver(fileDrop, e));
-        fileDrop.addEventListener("dragleave", e => draggedAway(fileDrop));
+        fileDrop.addEventListener("dragleave", () => draggedAway(fileDrop));
 
-        input.addEventListener("change", () => browsedFiles(fileDrop, input));
+        input.addEventListener("change", async () => await browsedFiles(fileDrop, input));
     }
 }

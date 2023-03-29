@@ -1,8 +1,10 @@
+import * as fileDrop from "./fileDrop";
 import * as multiInput from "./multiInput";
 import * as pane from "./pane";
 import * as toast from "./toast";
 
 const composePane = document.getElementById("compose-pane");
+const attachmentArea = composePane.querySelector(".attachment-area");
 
 function showError() {
     composePane.querySelector(".error").classList.remove("hidden");
@@ -24,6 +26,16 @@ async function generateMessageId() {
 async function submit(isDraft = false) {
     hideError();
 
+    const attachmentUuids = [];
+    for (const attachment of attachmentArea.querySelector(".attachment-list").children) {
+        if (attachment.classList.contains("uploaded")) {
+            attachmentUuids.push(attachment.getAttribute("data-uuid"));
+        } else {
+            alert("All attachments have not been uploaded yet. Please delete any failed attachments and wait for all of them to upload before proceeding.");
+            return;
+        }
+    }
+
     const to = multiInput.getValues(composePane.querySelector(".input-to"));
     const from = composePane.querySelector(".input-from").value;
     const cc = multiInput.getValues(composePane.querySelector(".input-cc"));
@@ -35,6 +47,7 @@ async function submit(isDraft = false) {
     formData.append("to", to);
     formData.append("subject", subject);
     formData.append("text", message);
+    formData.append("attachment-uuids", attachmentUuids.join(","));
 
     if (isDraft) {
         formData.append("save_as_draft", "1");
@@ -61,6 +74,7 @@ async function submit(isDraft = false) {
             toast.show("Email was sent.");
         }
 
+        fileDrop.clearUuids(attachmentArea);
         pane.close(composePane);
     } else {
         showError();
@@ -69,5 +83,5 @@ async function submit(isDraft = false) {
 
 export async function init() {
     composePane.querySelector("button.as-draft").addEventListener("click", async () => await submit(true));
-    composePane.querySelector("button.send").addEventListener("click", submit);
+    composePane.querySelector("button.send").addEventListener("click", async () => await submit());
 }
