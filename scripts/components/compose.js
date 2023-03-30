@@ -44,7 +44,7 @@ async function submit(isDraft = false) {
 
     const formData = new FormData();
     formData.append("from", from);
-    formData.append("to", to);
+    formData.append("to", to.join(","));
     formData.append("subject", subject);
     formData.append("text", message);
     formData.append("attachment-uuids", attachmentUuids.join(","));
