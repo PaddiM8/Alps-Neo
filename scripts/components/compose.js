@@ -48,6 +48,7 @@ async function submit(isDraft = false) {
     formData.append("subject", subject);
     formData.append("text", message);
     formData.append("attachment-uuids", attachmentUuids.join(","));
+    formData.append("content_type", "text/html");
 
     if (isDraft) {
         formData.append("save_as_draft", "1");

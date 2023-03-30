@@ -1,0 +1,46 @@
+@use "../values" as values
+
+#trix-toolbar-1
+    margin-bottom: 0
+
+.input-message
+    border-top-left-radius: 0
+    border-top-right-radius: 0
+    overflow-y: auto
+
+    h1, h2, h3
+        margin: 0.2em 0
+
+    &:focus
+        outline: 0
+
+.trix-button-group
+    display: flex
+    margin-right: 1em
+
+.trix-button-row
+    display: flex
+    white-space: normal
+    font-size: 0.9em
+    background-color: #EEEEEE
+    border-radius: values.$radius
+    border-bottom-left-radius: 0
+    border-bottom-right-radius: 0
+    border: values.$border
+    border-bottom: 0
+    overflow: hidden
+
+    button
+        background-color: #E0E0E0
+        border: 0
+        border-right: values.$border
+        border-radius: 0
+        box-shadow: none
+        -webkit-box-shadow: none
+        -moz-box-shadow: none
+
+        &:first-child:not(.trix-button-group:first-child > *:first-child)
+            border-left: values.$border
+
+        &.trix-active
+            background-color: #B0BEC5

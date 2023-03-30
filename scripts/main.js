@@ -3,6 +3,7 @@ import * as compose from "./components/compose";
 import * as fileDrop from "./components/fileDrop";
 import * as mailList from "./components/mailList";
 import * as multiInput from "./components/multiInput";
+import * as trix from "./components/trix";
 import * as pane from "./components/pane";
 
 mailbox.init();

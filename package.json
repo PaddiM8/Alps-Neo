@@ -3,15 +3,16 @@
     "version": "1.0.0",
     "description": "A simple and modern theme for Alps webmail",
     "scripts": {
-        "build": "esbuild scripts/main.js --bundle --sourcemap --outfile=out/out.js",
-        "dist": "esbuild scripts/main.js --bundle --minify --outfile=out/out.js",
-        "watch": "node ./build.js",
+        "build": "./build.sh",
+        "dist": "./build.sh dist",
+        "watch": "./build.sh && node ./watch.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "PaddiM8",
     "license": "MIT",
     "dependencies": {
-        "esbuild": "0.17.14"
+        "esbuild": "0.17.14",
+        "trix": "^2.0.4"
     },
     "devDependencies": {
         "sass": "^1.60.0"

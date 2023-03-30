@@ -3,7 +3,7 @@ import * as fileDrop from "./fileDrop";
 let resizing = false;
 
 export function clear(pane) {
-    for (const input of pane.querySelectorAll("input, textarea")) {
+    for (const input of pane.querySelectorAll("input, textarea, .textarea")) {
         if (input.classList.contains("no-clear")) {
             continue;
         }
