@@ -46,6 +46,19 @@ a
 .hidden
     display: none
 
+// Since the max-height of the attachment area
+// is calculated with JavaScript to ensure it
+// never expands its parent, the compose pane
+// needs an actual size during initialisation.
+// Since it's hidden initially, we need to make
+// sure it still has a size when it's hidden.
+#compose-pane.hidden
+    display: block
+    position: fixed
+    top: 0
+    transform: translate(-100%)
+    left: 0
+
 .error
     color: values.$red
 
@@ -61,7 +74,3 @@ a
 
     .mail-display
         overflow-y: auto
-
-    .compose-pane
-        height: 58vh
-        min-height: 16em

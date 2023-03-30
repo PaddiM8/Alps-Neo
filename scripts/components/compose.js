@@ -68,13 +68,14 @@ async function submit(isDraft = false) {
         body: formData,
     });
 
-    if (response.ok) {
-        if (isDraft) {
-            toast.show("Saved as draft.");
-        } else {
-            toast.show("Email was sent.");
-        }
-
+    // Alps will give status code 200 even if it fails, but 301
+    // when it actually sends it.
+    if (response.status == 301) {
+        toast.show("Email was sent.");
+        fileDrop.clearUuids(attachmentArea);
+        pane.close(composePane);
+    } else if (isDraft) {
+        toast.show("Saved as draft.");
         fileDrop.clearUuids(attachmentArea);
         pane.close(composePane);
     } else {

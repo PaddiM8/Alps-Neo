@@ -1,6 +1,7 @@
 import * as fileDrop from "./fileDrop";
 
 let resizing = false;
+let lastSize = null;
 
 export function clear(pane) {
     for (const input of pane.querySelectorAll("input, textarea, .textarea")) {
@@ -26,11 +27,22 @@ export function clear(pane) {
 export function close(pane) {
     pane.classList.add("hidden");
     pane.classList.remove("minimised");
+    pane.previousElementSibling.style.height = "";
     clear(pane);
 }
 
 export function minimise(pane) {
     pane.classList.add("minimised");
+    const sibling = pane.previousElementSibling;
+    const bodyHeight = document.body.getBoundingClientRect().height;
+    const siblingTop = sibling.getBoundingClientRect().top;
+    lastSize = sibling.style.height;
+    sibling.style.height = bodyHeight - siblingTop - pane.querySelector(".pane-header").clientHeight + "px";
+}
+
+export function unminimise(pane) {
+    pane.classList.remove("minimised");
+    pane.previousElementSibling.style.height = lastSize;
 }
 
 function initPane(pane) {
@@ -43,7 +55,7 @@ function initPane(pane) {
     const header = pane.querySelector(".pane-header");
     header.addEventListener("click", e => {
         if (!e.target.classList.contains("minimise")) {
-            pane.classList.remove("minimised");
+            unminimise(pane);
         }
     });
 
@@ -60,10 +72,12 @@ function initPane(pane) {
         document.body.style.userSelect = "";
     });
 
+    const sibling = pane.previousElementSibling;
+    sibling.style.boxSizing = "border-box";
     document.addEventListener("mousemove", e => {
         if (resizing) {
-            pane.style.maxHeight = `calc(${pane.parentElement.clientHeight}px - 2em)`;
-            pane.style.height = document.body.clientHeight - e.clientY + "px";
+            pane.style.height = "auto";
+            pane.previousElementSibling.style.height = e.clientY - sibling.getBoundingClientRect().top + "px";
         }
     });
 }
