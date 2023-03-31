@@ -22,6 +22,9 @@ export function clear(pane) {
     for (const drop of pane.querySelectorAll(".file-drop")) {
         fileDrop.clear(drop);
     }
+
+    const event = new Event("cleared");
+    pane.dispatchEvent(event);
 }
 
 export function close(pane) {
@@ -45,6 +48,16 @@ export function unminimise(pane) {
     pane.previousElementSibling.style.height = lastSize;
 }
 
+export function show(pane) {
+    pane.previousElementSibling.style.height = lastSize ?? "25vh";
+    pane.classList.remove("hidden");
+}
+
+export function setTitle(pane, title) {
+    const titleElement = pane.querySelector(".pane-header .title");
+    titleElement.textContent = title;
+}
+
 function initPane(pane) {
     const closeButton = pane.querySelector(".close");
     closeButton.addEventListener("click", () => close(pane));
@@ -54,7 +67,7 @@ function initPane(pane) {
 
     const header = pane.querySelector(".pane-header");
     header.addEventListener("click", e => {
-        if (!e.target.classList.contains("minimise")) {
+        if (e.target.classList.contains("minimised")) {
             unminimise(pane);
         }
     });
@@ -77,7 +90,8 @@ function initPane(pane) {
     document.addEventListener("mousemove", e => {
         if (resizing) {
             pane.style.height = "auto";
-            pane.previousElementSibling.style.height = e.clientY - sibling.getBoundingClientRect().top + "px";
+            const height = e.clientY - sibling.getBoundingClientRect().top + "px";
+            sibling.style.height = height;
         }
     });
 }

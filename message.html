@@ -1,12 +1,17 @@
-<div class="mail">
+<div id="mail" class="mail" data-uid="{{ .Message.Uid }}">
     <section class="mail-header">
-        <h1>
-            {{ if .Message.Envelope.Subject }}
-                {{ .Message.Envelope.Subject }}
-            {{ else }}
-                No subject
-            {{ end }}
-        </h1>
+        <div class="top">
+            <h1>
+                {{ if .Message.Envelope.Subject }}
+                    {{ .Message.Envelope.Subject }}
+                {{ else }}
+                    No subject
+                {{ end }}
+            </h1>
+            <div class="time">
+                <span>{{ .Message.Envelope.Date | formatdate }}</span>
+            </div>
+        </div>
 
         <div class="from">
             {{ template "addr-list" .Message.Envelope.From }}
@@ -15,8 +20,11 @@
             <span clsas="label">To:</span>
             <span>{{ template "addr-list" .Message.Envelope.To }}</span>
         </div>
-        <div class="time">
-            <span>{{ .Message.Envelope.Date | formatdate }}</span>
+        <div id="mail-actions" class="actions">
+            <span class="action reply"><i class="fas fa-reply"></i>Reply</span>
+            <span class="action forward"><i class="fas fa-share"></i>Forward</span>
+            <span class="action delete"><i class="fas fa-trash"></i>Delete</span>
+            <span class="action move"><i class="fas fa-folder"></i>Move</span>
         </div>
 
         {{ if .Message.Envelope.Cc }}

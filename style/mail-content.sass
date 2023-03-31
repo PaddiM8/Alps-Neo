@@ -5,7 +5,11 @@
 
 .mail-header
     display: grid
-    grid-template-areas: "subject subject" "from from" "to time"
+    grid-template-areas: "top top" "from from" "to actions"
+
+    .top
+        display: flex
+        grid-area: top
 
     h1
         grid-area: subject
@@ -13,6 +17,13 @@
         margin-bottom: 0.2em
         font-weight: 600
         font-size: 1.4em
+
+    .time
+        text-align: right
+        margin-left: auto
+        font-size: 0.9em
+        white-space: nowrap
+        color: values.$gray-text-color
 
     .from
         grid-area: from
@@ -23,11 +34,22 @@
         grid-area: to
         font-size: 0.9em
 
-    .time
-        grid-area: time
-        text-align: right
-        font-size: 0.9em
-        color: values.$gray-text-color
+    .actions
+        grid-area: actions
+        margin-left: auto
+        font-size: 0.85em
+        cursor: default
+
+        .action
+            padding: 0.4em
+            border-radius: values.$radius
+            cursor: pointer
+
+            &:hover
+                background-color: #E0E0E0
+
+            i
+                margin-right: 0.4em
 
 .mail-body
     border-top: values.$border

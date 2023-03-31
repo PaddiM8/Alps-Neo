@@ -28,7 +28,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#ffffff">
-    <title>{{ .GlobalData.Title }}</title>
+    <title>{{ .GlobalData.Username }}</title>
     <link rel="stylesheet" href="/themes/sane/out/main.css">
     <link rel="icon" type="image/png" href="/themes/alps/assets/favicon-196x196.png" sizes="196x196" />
     <link rel="icon" type="image/png" href="/themes/alps/assets/favicon-96x96.png" sizes="96x96" />
@@ -39,7 +39,13 @@
 
 <body>
     <header>
-        <h1>Header placeholder</h1>
+        <img class="logo" src="/themes/sane/res/favicon-128.png">
+        <h1>Alps Mail</h1>
+        <div class="right">
+            <span class="email-address">{{ .GlobalData.Username }}</span>
+            <a href="/settings">Settings</a>
+            <a href="/logout">Logout</a>
+        </div>
     </header>
     <main>
         {{ $mailboxName := .Mailbox.Name }}
@@ -92,7 +98,11 @@
                                 <input type="email" placeholder="john@smith.com" />
                             </div>
                             <span class="input-label">From</span>
-                            <input type="text" class="input-from no-clear" placeholder="your@email.com" value="{{ .GlobalData.Username }}" />
+                            <input type="text"
+                                   class="input-from no-clear"
+                                   placeholder="your@email.com"
+                                   value="{{ .GlobalData.Username }}"
+                                   data-default="{{ .GlobalData.Username }}" />
                             <span class="input-label">Cc</span>
                             <div class="input-cc multi-input">
                                 <input type="email" placeholder="sven@svensson.se" disabled />

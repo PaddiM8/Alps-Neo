@@ -1,4 +1,6 @@
+import * as compose from "./components/compose";
 import * as mailList from "./components/mailList";
+import * as pane from "./components/pane";
 
 const composeButton = document.getElementById("compose-button");
 const composePane = document.getElementById("compose-pane");
@@ -38,7 +40,8 @@ async function mailboxSelected(mailboxEntry) {
 
 export async function init() {
     composeButton.addEventListener("click", () => {
-        composePane.classList.remove("hidden");
+        compose.intoNewMail(composePane);
+        pane.show(composePane);
     });
 
     activeMailbox.classList.add("active");

@@ -1,3 +1,5 @@
+import * as mailContent from "../mailContent";
+
 const mailList = document.getElementById("mail-list");
 const mailDisplay = document.getElementById("mail-display");
 const shadowContent = document.createElement("div");
@@ -63,6 +65,8 @@ async function selectEntry(entry, remoteContent) {
         const shadow = mailBody.attachShadow({ mode: "open" });
         shadow.appendChild(shadowContent);
     }
+
+    mailContent.init();
 
     lastSelectedEntry = entry;
 }

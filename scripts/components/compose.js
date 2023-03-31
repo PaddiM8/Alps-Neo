@@ -5,6 +5,7 @@ import * as toast from "./toast";
 
 const composePane = document.getElementById("compose-pane");
 const attachmentArea = composePane.querySelector(".attachment-area");
+let inReplyTo = null;
 
 function showError() {
     composePane.querySelector(".error").classList.remove("hidden");
@@ -50,6 +51,10 @@ async function submit(isDraft = false) {
     formData.append("attachment-uuids", attachmentUuids.join(","));
     formData.append("content_type", "text/html");
 
+    if (inReplyTo) {
+        formData.append("in_reply_to", inReplyTo);
+    }
+
     if (isDraft) {
         formData.append("save_as_draft", "1");
     }
@@ -68,9 +73,10 @@ async function submit(isDraft = false) {
         body: formData,
     });
 
-    // Alps will give status code 200 even if it fails, but 301
-    // when it actually sends it.
-    if (response.status == 301) {
+    // Seems to redirect on success only. Checking status code
+    // is not reliable, since it returns 200 even when when errors
+    // happen.
+    if (response.redirected) {
         toast.show("Email was sent.");
         fileDrop.clearUuids(attachmentArea);
         pane.close(composePane);
@@ -83,7 +89,25 @@ async function submit(isDraft = false) {
     }
 }
 
+export function intoNewMail() {
+    pane.setTitle(composePane, "Write an Email");
+    const fromInput = composePane.querySelector(".input-from");
+    fromInput.value = fromInput.getAttribute("data-default");
+}
+
+export function intoReply(mailId, to, from, subject) {
+    inReplyTo = mailId;
+    pane.setTitle(composePane, "Reply to Email");
+    multiInput.setValues(composePane.querySelector(".input-to"), [to]);
+    composePane.querySelector(".input-from").value = from;
+    composePane.querySelector(".input-subject").value = subject;
+}
+
 export async function init() {
     composePane.querySelector("button.as-draft").addEventListener("click", async () => await submit(true));
     composePane.querySelector("button.send").addEventListener("click", async () => await submit());
+    composePane.addEventListener("cleared", () => {
+        console.log("cleared inReplyTo");
+        inReplyTo = null;
+    });
 }

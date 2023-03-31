@@ -48,6 +48,14 @@ export function getValues(element) {
         .map(x => x.querySelector(".content").textContent);
 }
 
+export function setValues(element, values) {
+    for (const value of values) {
+        const input = element.querySelector("input");
+        input.value = value;
+        addInputBox(input);
+    }
+}
+
 export function init() {
     for (const multiInput of document.querySelectorAll(".multi-input")) {
         const input = multiInput.querySelector("input");
