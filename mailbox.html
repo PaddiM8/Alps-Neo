@@ -4,7 +4,24 @@
         {{- if eq $name "INBOX" -}}
             {{ $name = "Inbox" }}
         {{- end -}}
+        {{ $icon := "" }}
+        {{- if eq $name "Inbox" -}}
+            {{ $icon = "fa-inbox" }}
+        {{- else if eq $name "Drafts" -}}
+            {{ $icon = "fa-note-sticky" }}
+        {{- else if eq $name "Sent" -}}
+            {{ $icon = "fa-paper-plane" }}
+        {{- else if eq $name "Junk" -}}
+            {{ $icon = "fa-spaghetti-monster-flying" }}
+        {{- else if eq $name "Trash" -}}
+            {{ $icon = "fa-trash" }}
+        {{- else if eq $name "Archive" -}}
+            {{ $icon = "fa-box-archive" }}
+        {{- end -}}
         <div class="mailbox-entry" data-name="{{ $name }}">
+            {{ if ne $name "" }}
+                <i class="fas {{ $icon }}"></i>
+            {{ end }}
             {{ $name }}{{- if .Info.HasAttr "\\HasChildren" }}/{{ end }}
             {{ if .Status }}
                 {{ if .Status.Unseen }}
@@ -86,8 +103,8 @@
                 <div class="pane-header">
                     <span class="title">Write an Email</span>
                     <div class="buttons">
-                        <span class="minimise">⎽</span>
-                        <span class="close">×</span>
+                        <span class="minimise fas fa-window-minimize"></span>
+                        <span class="close fas fa-xmark"></span>
                     </div>
                 </div>
                 <div class="pane-content">
