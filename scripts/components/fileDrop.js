@@ -8,41 +8,56 @@ function humanFileSize(number) {
     }
 }
 
-async function removeFile(fileDrop, fileElement) {
+async function removeRemoteFile(fileDrop, fileElement) {
     const removeClient = new XMLHttpRequest();
     const uuid = fileElement.getAttribute("data-uuid");
     if (uuid) {
         removeClient.open("POST", `/compose/attachment/${uuid}/remove`);
         removeClient.send();
     }
-
-    fileDrop.querySelector(".list").removeChild(fileElement);
 }
 
-async function addFile(fileDrop, fileInfo) {
+export function addFileEntry(fileDrop, name, size, isAvailableNow = false) {
     const fileList = fileDrop.querySelector(".list");
-    const file = document.createElement("span");
-    file.className = "file";
+    const fileElement = document.createElement("span");
+    fileElement.className = "file";
 
-    const name = document.createElement("span");
-    name.className = "name";
-    name.innerHTML = fileInfo.name;
-    const size = document.createElement("span");
-    size.className = "size"
-    size.innerHTML = humanFileSize(fileInfo.size);
-    const remove = document.createElement("span");
-    remove.className = "remove"
-    remove.innerHTML = "×";
+    if (isAvailableNow) {
+        fileElement.classList.add("available");
+    }
 
-    file.append(name, size, remove);
-    fileList.appendChild(file);
+    const nameElement = document.createElement("span");
+    nameElement.className = "name";
+    nameElement.innerHTML = name;
+
+    const sizeElement = document.createElement("span");
+    sizeElement.className = "size"
+    if (size) {
+        sizeElement.innerHTML = humanFileSize(size);
+    }
+
+    const removeElement = document.createElement("span");
+    removeElement.className = "remove"
+    removeElement.innerHTML = "×";
+    removeElement.addEventListener("click", () => {
+        fileDrop.querySelector(".list").removeChild(fileElement);
+    });
+
+    fileElement.append(nameElement, sizeElement, removeElement);
+    fileList.appendChild(fileElement);
+
+    return fileElement;
+}
+
+async function uploadFile(fileDrop, fileInfo) {
+    const fileElement = addFileEntry(fileDrop, fileInfo.name, fileInfo.size);
 
     // Upload the file and update the progress bar
     const client = new XMLHttpRequest();
     client.open("POST", "/compose/attachment");
 
     client.upload.onprogress = progress => {
-        file.style.setProperty(
+        fileElement.style.setProperty(
             "--progress",
             (progress.loaded / progress.total) * 100 + "%"
         );
@@ -52,22 +67,22 @@ async function addFile(fileDrop, fileInfo) {
         if (client.status == 200) {
             try {
                 const response = JSON.parse(client.responseText);
-                file.setAttribute("data-uuid", response[0]);
-                file.classList.add("uploaded");
+                fileElement.setAttribute("data-uuid", response[0]);
+                fileElement.classList.add("uploaded");
             } catch {
-                file.classList.add("failed");
+                fileElement.classList.add("failed");
             }
         } else {
-            file.classList.add("failed");
+            fileElement.classList.add("failed");
         }
     };
 
-    remove.addEventListener("click", async () => {
+    fileElement.querySelector(".remove").addEventListener("click", async () => {
         if (client.LOADING) {
             client.abort();
         }
 
-        await removeFile(fileDrop, file);
+        await removeRemoteFile(fileDrop, fileElement);
     });
 
 
@@ -78,7 +93,7 @@ async function addFile(fileDrop, fileInfo) {
 
 async function browsedFiles(fileDrop, input) {
     for (const file of input.files) {
-        await addFile(fileDrop, file);
+        await uploadFile(fileDrop, file);
     }
 }
 
@@ -87,7 +102,7 @@ async function fileDropped(fileDrop, event) {
 
     for (const item of event.dataTransfer.items) {
         if (item.kind == "file") {
-            await addFile(fileDrop, item.getAsFile());
+            await uploadFile(fileDrop, item.getAsFile());
         }
     }
 
@@ -113,7 +128,7 @@ export function clearUuids(fileDrop) {
 export async function clear(fileDrop) {
     const list = fileDrop.querySelector(".list");
     for (const attachment of list.children) {
-        await removeFile(fileDrop, attachment);
+        await removeRemoteFile(fileDrop, attachment);
     }
 
     list.innerHTML = "";

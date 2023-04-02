@@ -1,12 +1,26 @@
 import * as compose from "./components/compose";
 import * as pane from "./components/pane";
 
+const composePane = document.getElementById("compose-pane");
+
 function getMail() {
     return document.getElementById("mail");
 }
 
+function getMailbox() {
+    return getMail().getAttribute("data-mailbox");
+}
+
+function getDate() {
+    return getMail().querySelector(".mail-header .time").textContent.trim();
+}
+
 function getId() {
     return getMail().getAttribute("data-uid");
+}
+
+function getTextPart() {
+    return getMail().getAttribute("data-text-part");
 }
 
 function getSubject() {
@@ -21,17 +35,41 @@ function getSender() {
     return getMail().querySelector(".mail-header .from a").textContent.trim();
 }
 
+function getBody() {
+    const content = getMail().querySelector(".mail-body .content");
+    return content.shadowRoot
+        ? content.shadowRoot.innerHTML
+        : content.innerHTML;
+}
+
 function reply() {
     compose.intoReply(
+        getMailbox(),
         getId(),
         getSender(),
         getRecipient(),
-        "Re: " + getSubject()
+        getSubject(),
+        getBody()
     );
-    pane.show(document.getElementById("compose-pane"));
+    pane.show(composePane);
+}
+
+async function forward() {
+    await compose.intoForward(
+        getMailbox(),
+        getId(),
+        getTextPart(),
+        getDate(),
+        getSender(),
+        getRecipient(),
+        getSubject(),
+        getBody()
+    );
+    pane.show(composePane);
 }
 
 export function init() {
     const actions = document.getElementById("mail-actions");
     actions.querySelector(".reply").addEventListener("click", reply);
+    actions.querySelector(".forward").addEventListener("click", forward);
 }

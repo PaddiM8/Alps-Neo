@@ -1,4 +1,8 @@
-<div id="mail" class="mail" data-uid="{{ .Message.Uid }}">
+<div id="mail"
+     class="mail"
+     data-uid="{{ .Message.Uid }}"
+     data-mailbox="{{ .Message.Mailbox }}"
+     data-text-part="{{ .Message.TextPart.PathString }}">
     <section class="mail-header">
         <div class="top">
             <h1>
@@ -57,9 +61,9 @@
                 <li>
                     <a class="nav-link"
                     {{if .IsText}}
-                        href="?part={{.PathString}}"
+                        href="?part={{ .PathString }}"
                     {{else}}
-                        href="{{$.Message.URL}}/raw?part={{.PathString}}"
+                        href="{{ $.Message.URL }}/raw?part={{ .PathString }}"
                     {{end}}
                     >
                         {{- if .Filename -}}

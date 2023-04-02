@@ -1,1 +1,9 @@
-{{ .Message.MessageID }}
+{{ $pageQuery := index .GlobalData.URL.Query "part" }}
+{{ if ne (len $pageQuery) 1 }}
+    {{ .Message.MessageID }}
+{{ else }}
+    {{ range .Message.Attachments }}
+        {{ .Node.PathString }}
+        {{ .Filename }}
+    {{ end }}
+{{ end }}
