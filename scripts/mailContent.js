@@ -1,4 +1,6 @@
 import * as compose from "./components/compose";
+import * as dialog from "./components/dialog";
+import * as mailList from "./components/mailList";
 import * as pane from "./components/pane";
 
 const composePane = document.getElementById("compose-pane");
@@ -68,8 +70,29 @@ async function forward() {
     pane.show(composePane);
 }
 
+async function remove() {
+    const confirmation = await dialog.showYesNo(
+        "Delete Mail",
+        "Are you sure you want to delete this mail?",
+        true
+    );
+
+    if (confirmation == "yes") {
+        const formData = new FormData();
+        formData.append("uids", getId());
+        await fetch(`/message/${getMailbox()}/delete`, {
+            method: "POST",
+            credentials: "same-origin",
+            body: formData,
+        });
+
+        await mailList.removeSelected();
+    }
+}
+
 export function init() {
     const actions = document.getElementById("mail-actions");
     actions.querySelector(".reply").addEventListener("click", reply);
     actions.querySelector(".forward").addEventListener("click", forward);
+    actions.querySelector(".delete").addEventListener("click", remove);
 }

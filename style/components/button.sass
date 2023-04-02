@@ -13,10 +13,17 @@ button
     &:hover
         background-color: values.$button-color-hover
 
-button.primary
-    @include values.button-shadow
-    color: white
-    background-color: values.$primary-color
+    &.primary
+        @include values.button-shadow
+        color: white
+        background-color: values.$primary-color
 
-    &:hover
-        background-color: values.$primary-color-hover
+        &:hover
+            background-color: values.$primary-color-hover
+
+    &.danger
+        @include values.button-shadow-bright
+        background-color: values.$red
+
+        &:hover
+            background-color: values.$red-hover

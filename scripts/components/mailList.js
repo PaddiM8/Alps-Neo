@@ -71,6 +71,11 @@ async function selectEntry(entry, remoteContent) {
     lastSelectedEntry = entry;
 }
 
+export async function removeSelected() {
+    mailList.removeChild(lastSelectedEntry);
+    await selectEntry(mailList.firstElementChild);
+}
+
 export async function loadMailbox(name) {
     mailboxName = name;
     mailList.innerHTML = "";
