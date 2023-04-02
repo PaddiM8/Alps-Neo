@@ -54,27 +54,24 @@
         {{end}}
         {{ $attachments := .Message.Attachments }}
         {{ if $attachments }}
-            <section class="parts">
-                <h3>Attachments</h3>
-                <ul>
-                    {{ range .Message.Attachments }}
-                <li>
-                    <a class="nav-link"
-                    {{if .IsText}}
-                        href="?part={{ .PathString }}"
-                    {{else}}
-                        href="{{ $.Message.URL }}/raw?part={{ .PathString }}"
-                    {{end}}
-                    >
-                        {{- if .Filename -}}
-                            {{.Filename}}
-                        {{- else -}}
-                            (no filename)
-                        {{- end -}}
-                    </a> ({{ .MIMEType }}, {{ .SizeString }})
-                </li>
+            <section class="attachments">
+                {{ range .Message.Attachments }}
+                    <a class="attachment-button"
+                       {{ if .IsText }}href="?part={{ .PathString }}"
+                       {{ else }}href="{{ $.Message.URL }}/raw?part={{ .PathString }}"{{end}}
+                       data-mime="{{ .MIMEType }}">
+                        <div class="attachment-inner">
+                            <span class="attachment-name">
+                                {{- if .Filename -}}
+                                    {{.Filename}}
+                                {{- else -}}
+                                    (no filename)
+                                {{- end -}}
+                            </span>
+                            <span class="attachment-size">{{ .SizeString }}</span>
+                        </div>
+                    </a>
                 {{ end }}
-                </ul>
             </section>
         {{ end }}
 

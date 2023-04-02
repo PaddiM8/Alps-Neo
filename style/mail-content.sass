@@ -58,6 +58,48 @@
     margin-top: 0.8em
     padding-top: 0.8em
 
+    .attachments
+        display: flex
+        flex-wrap: wrap
+        margin-top: -0.4em
+        margin-bottom: 0.6em
+
+    .attachment-button
+        @include values.button-shadow-bright
+
+        display: flex
+        align-items: center
+        width: fit-content
+        background-color: values.$button-color
+        padding: 0.4em 0.8em
+        margin-right: 0.4em
+        margin-bottom: 0.4em
+        font-size: 0.9em
+        border-radius: values.$radius
+        color: inherit
+        text-decoration: none
+        cursor: pointer
+
+        &:hover
+            background-color: values.$button-color-hover
+
+    .attachment-inner
+        display: flex
+        flex-direction: column
+
+        .attachment-name
+            max-width: 10em
+            text-overflow: ellipsis
+            overflow: hidden
+            font-size: 0.9em
+
+        .attachment-size
+            font-size: 0.8em
+            color: #424242
+
+    .content
+        overflow: auto
+
     .content pre
         white-space: pre-wrap
 
@@ -73,3 +115,50 @@
 
         & > *:first-child
             margin-bottom: 0.2em
+
+.attachments .attachment-button
+    &::before
+        content: '\f15b'
+        font-family: "Font Awesome 6 Free"
+        font-size: 1.15em
+        padding-right: 0.5em
+
+    &[data-mime$="/pdf"]::before
+        content: '\f1c1'
+
+    &[data-mime^="image/"]::before
+        content: '\f1c5'
+
+    &[data-mime^="video/"]::before
+        content: '\f1c8'
+
+    &[data-mime^="audio/"]::before
+        content: '\f1c7'
+
+    &[data-mime="text/csv"]::before,
+    &[data-mime="application/vnd.ms-excel"]::before,
+    &[data-mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]::before
+        content: '\f1c3'
+
+    &[data-mime="application/msword"]::before,
+    &[data-mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"]::before,
+    &[data-mime="application/rtf"]::before
+        content: '\f1c2'
+
+    &[data-mime$="/x-bzip"]::before,
+    &[data-mime$="/x-bzip2"]::before,
+    &[data-mime$="/vnd.rar"]::before,
+    &[data-mime$="/x-tar"]::before,
+    &[data-mime$="/zip"]::before,
+    &[data-mime$="/x-7z-compressed"]::before
+        content: '\f1c6'
+
+    &[data-mime^="/css"]::before,
+    &[data-mime^="/html"]::before,
+    &[data-mime^="/javascript"]::before,
+    &[data-mime^="/css"]::before,
+    &[data-mime^="/x-c"]::before,
+    &[data-mime^="/x-bsh"]::before,
+    &[data-mime^="x-sh"]::before,
+    &[data-mime^="/x-script.phyton"]::before
+        content: '\f1c9'
