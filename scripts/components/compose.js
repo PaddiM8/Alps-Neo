@@ -64,7 +64,9 @@ async function submit(kind = "normal") {
     formData.append("content_type", "text/html");
 
     if (context.toForward && prevAttachments.length > 0) {
-        formData.append("prev_attachments", prevAttachments.join(","));
+        for (const prevAttachment of prevAttachments) {
+            formData.append("prev_attachments", prevAttachment);
+        }
     }
 
     if (kind == "draft") {
@@ -118,7 +120,8 @@ async function getPreviousAttachments(mailbox, mailId, textPart) {
         }
 
         const trimmedLine = line.trim();
-        if (attachments.length == 0 || attachments[attachments.length - 1].length == 2) {
+        if (attachments.length == 0 ||
+            Object.keys(attachments[attachments.length - 1]).length == 2) {
             attachments.push({
                 partString: trimmedLine
             });
