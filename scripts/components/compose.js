@@ -59,7 +59,7 @@ async function submit(kind = "normal") {
     formData.append("from", from);
     formData.append("to", to.join(","));
     formData.append("subject", subject);
-    formData.append("text", message);
+    formData.append("text", `<html><body>${message}</body></html>`);
     formData.append("attachment-uuids", attachmentUuids.join(","));
     formData.append("content_type", "text/html");
 
