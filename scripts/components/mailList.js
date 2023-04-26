@@ -15,8 +15,15 @@ async function loadEntries() {
 
     try {
         const previousLength = mailList.children.length;
-        const entries = await fetch(`/mailbox/${mailboxName}?page=${page}`);
-        mailList.insertAdjacentHTML("beforeend", await entries.text());
+        const entriesResult = await fetch(`/mailbox/${mailboxName}?page=${page}`);
+        const entries = await entriesResult.text();
+
+        // Make sure to clear it after fetching to avoid flickering
+        if (lastLoadedPage == null) {
+            mailList.innerHTML = "";
+        }
+
+        mailList.insertAdjacentHTML("beforeend", entries);
         lastLoadedPage = page;
 
         for (let i = previousLength; i < mailList.children.length; i++) {
@@ -78,7 +85,6 @@ export async function removeSelected() {
 
 export async function loadMailbox(name) {
     mailboxName = name;
-    mailList.innerHTML = "";
     lastSelectedEntry = null;
     lastLoadedPage = null;
     lastLoadSuccessful = true;
