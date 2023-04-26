@@ -44,9 +44,9 @@ async function selectEntry(entry, remoteContent) {
     entry.classList.add("active");
 
     const uid = entry.getAttribute("data-uid");
-    const part = +entry.getAttribute("data-part") + 1;
+    const part = Number(entry.getAttribute("data-part")) + 1;
     const remoteContentString = remoteContent ? "&allow-remote-resources=1" : "";
-    const mail = await fetch(`/message/${mailboxName}/${uid}?part=${part}${remoteContentString}`);
+    const mail = await fetch(`/message/${mailboxName}/${uid}?preferredContentType=text%2Fhtml${remoteContentString}`);
     mailDisplay.innerHTML = await mail.text();
     const remoteContentButton = mailDisplay.querySelector(".remote-content-button")
     if (remoteContentButton) {
@@ -88,7 +88,8 @@ export async function loadMailbox(name) {
     while (shouldLoadMore())
         await loadEntries();
 
-    if (mailList.children.length > 0) {
+    const mailDisplay = document.getElementById("mail-display");
+    if (mailList.children.length > 0 && mailDisplay.children.length == 0) {
         await selectEntry(mailList.firstElementChild);
     }
 }

@@ -156,12 +156,12 @@
             {{ $classes = printf "%s %s" $classes "deleted" }}
         {{ end }}
 
-        {{ $selectedPart := 0 }}
+        {{ $selectedPart := -1 }}
         {{ $selectedPartMime := "text/plain" }}
         {{ if eq .BodyStructure.MIMEType "multipart" }}
             {{ range $i, $part := .BodyStructure.Parts }}
                 {{ $mime := print $part.MIMEType "/" $part.MIMESubType }}
-                {{ if eq $mime "text/html" }}
+                {{ if or (eq $mime "text/html") (eq $mime "multipart/alternative") }}
                     {{ $selectedPart = $i }}
                     {{ $selectedPartMime = $mime }}
                 {{ end }}
@@ -170,7 +170,7 @@
 
         <div class="item {{ $classes }}"
                 data-uid="{{ .Uid }}"
-                {{ if ne $selectedPart 0 }}data-part="{{ $selectedPart }}"{{ end }}>
+                {{ if ne $selectedPart -1 }}data-part="{{ $selectedPart }}"{{ end }}>
             {{ if .HasFlag "\\Answered" }}<span class="replied">↩</span>{{ end }}
             {{ if .HasFlag "$Forwarded" }}<span class="forwarded">↪</span>{{ end }}
 
