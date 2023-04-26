@@ -30,7 +30,9 @@ async function generateMessageId() {
         return null;
     }
 
-    return (await result.text()).trim();
+    const text = (await result.text()).trim();
+
+    return "<" + text.slice(4, -4) + ">";
 }
 
 async function submit(kind = "normal") {
@@ -53,13 +55,16 @@ async function submit(kind = "normal") {
     const from = composePane.querySelector(".input-from").value;
     const cc = multiInput.getValues(composePane.querySelector(".input-cc"));
     const subject = composePane.querySelector(".input-subject").value;
-    const message = composePane.querySelector(".input-message").value;
+
+    const messageElement = composePane.querySelector(".input-message")
+    const html = `<html><body>${messageElement.value}</body></html>`;
 
     const formData = new FormData();
     formData.append("from", from);
     formData.append("to", to.join(","));
     formData.append("subject", subject);
-    formData.append("text", `<html><body>${message}</body></html>`);
+    formData.append("text", messageElement.textContent);
+    formData.append("html", html);
     formData.append("attachment-uuids", attachmentUuids.join(","));
     formData.append("content_type", "text/html");
 
@@ -73,13 +78,13 @@ async function submit(kind = "normal") {
         formData.append("save_as_draft", "1");
     }
 
-    const mailData = await generateMessageId();
-    if (!mailData) {
+    const messageId = await generateMessageId();
+    if (!messageId) {
         showError();
         return;
     }
 
-    formData.append("message_id", mailData.messageId);
+    formData.append("message_id", messageId);
 
     let url = "/compose";
     if (context.inReplyTo) {
