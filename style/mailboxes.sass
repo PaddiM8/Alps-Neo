@@ -1,6 +1,8 @@
 @use "values" as values
 
 .mailboxes
+    background-color: values.$background-color-dark
+
     & > *
         margin: 0.4em 0.4em
 
@@ -13,7 +15,7 @@
 
         &.active, &:hover
             background-color: values.$selected-color
-            outline: 1px solid white
+            outline: 1px solid transparent
 
         &.action
             color: values.$link-color-dark
