@@ -102,7 +102,7 @@ async function submit(kind = "normal") {
     // Seems to redirect on success only. Checking status code
     // is not reliable, since it returns 200 even when when errors
     // happen.
-    if (response.redirected) {
+    if (response.redirected && response.headers.get("location") == "/mailbox/INBOX") {
         toast.show("Email was sent.");
         fileDrop.clearUuids(attachmentArea);
         pane.close(composePane);
