@@ -1,34 +1,39 @@
 {{ define "mailbox-link" }}
-    {{ if not (.Info.HasAttr "\\Noselect") }}
-        {{ $name := .Info.Name }}
-        {{- if eq $name "INBOX" -}}
-            {{ $name = "Inbox" }}
-        {{- end -}}
-        {{ $icon := "" }}
-        {{- if eq $name "Inbox" -}}
-            {{ $icon = "fa-inbox" }}
-        {{- else if eq $name "Drafts" -}}
-            {{ $icon = "fa-note-sticky" }}
-        {{- else if eq $name "Sent" -}}
-            {{ $icon = "fa-paper-plane" }}
-        {{- else if eq $name "Junk" -}}
-            {{ $icon = "fa-spaghetti-monster-flying" }}
-        {{- else if eq $name "Trash" -}}
-            {{ $icon = "fa-trash" }}
-        {{- else if eq $name "Archive" -}}
-            {{ $icon = "fa-box-archive" }}
-        {{- end -}}
-        <div class="mailbox-entry" data-name="{{ $name }}">
-            {{ if ne $name "" }}
-                <i class="fas {{ $icon }}"></i>
-            {{ end }}
-            {{ $name }}{{- if .Info.HasAttr "\\HasChildren" }}/{{ end }}
-            {{ if .Status }}
-                {{ if .Status.Unseen }}
-                    <span class="unseen">({{ .Status.Unseen }})</span>
-                {{ end }}
-            {{ end }}
-        </div>
+{{ if not (.Info.HasAttr "\\Noselect") }}
+    {{ $name := .Info.Name }}
+    {{- if eq $name "INBOX" -}}
+        {{ $name = "Inbox" }}
+    {{- end -}}
+    {{ $icon := "" }}
+    {{- if eq $name "Inbox" -}}
+        {{ $icon = "fa-inbox" }}
+    {{- else if eq $name "Drafts" -}}
+        {{ $icon = "fa-note-sticky" }}
+    {{- else if eq $name "Sent" -}}
+        {{ $icon = "fa-paper-plane" }}
+    {{- else if eq $name "Junk" -}}
+        {{ $icon = "fa-spaghetti-monster-flying" }}
+    {{- else if eq $name "Trash" -}}
+        {{ $icon = "fa-trash" }}
+    {{- else if eq $name "Archive" -}}
+        {{ $icon = "fa-box-archive" }}
+    {{- end -}}
+
+    {{ $unreadCount := 0 }}
+    {{ if .Status }}
+        {{ if .Status.Unseen }}
+            {{ $unreadCount = .Status.Unseen }}
+        {{ end }}
+    {{ end }}
+    <div class="mailbox-entry"
+         data-name="{{ $name }}"
+         data-unread="{{ $unreadCount }}">
+        {{ if ne $name "" }}
+        <i class="fas {{ $icon }}"></i>
+        {{ end }}
+        {{ $name }}{{- if .Info.HasAttr "\\HasChildren" }}/{{ end }}
+        <span class="unread-count"></span>
+    </div>
     {{ else }}
         <div class="noselect">
             {{ .Info.Name }}{{- if .Info.HasAttr "\\HasChildren" }}/{{ end }}
@@ -73,25 +78,25 @@
             <button id="compose-button" class="compose-button">Compose</button>
             <span class="mailbox-label">{{ .GlobalData.Username }}</span>
             {{ with .CategorizedMailboxes }}
-                <div id="standard-mailboxes" class="standard-mailboxes">
-                    {{ with .Common.Inbox }}{{ template "mailbox-link" . }}{{ end }}
-                    {{ with .Common.Drafts }}{{ template "mailbox-link" . }}{{ end }}
-                    {{ with .Common.Sent }}{{ template "mailbox-link" . }}{{ end }}
-                    {{ with .Common.Junk }}{{ template "mailbox-link" . }}{{ end }}
-                    {{ with .Common.Trash }}{{ template "mailbox-link" . }}{{ end }}
-                    {{ with .Common.Archive }}{{ template "mailbox-link" . }}{{ end }}
-                </div>
-                <div>
-                    <hr>
-                    <div class="additional-mailboxes">
-                        {{ if .Additional }}
-                            {{ range .Additional }}
-                                {{ template "mailbox-link" . }}
-                            {{ end }}
+            <div id="standard-mailboxes" class="standard-mailboxes">
+                {{ with .Common.Inbox }}{{ template "mailbox-link" . }}{{ end }}
+                {{ with .Common.Drafts }}{{ template "mailbox-link" . }}{{ end }}
+                {{ with .Common.Sent }}{{ template "mailbox-link" . }}{{ end }}
+                {{ with .Common.Junk }}{{ template "mailbox-link" . }}{{ end }}
+                {{ with .Common.Trash }}{{ template "mailbox-link" . }}{{ end }}
+                {{ with .Common.Archive }}{{ template "mailbox-link" . }}{{ end }}
+            </div>
+            <div>
+                <hr>
+                <div class="additional-mailboxes">
+                    {{ if .Additional }}
+                        {{ range .Additional }}
+                            {{ template "mailbox-link" . }}
                         {{ end }}
-                    </div>
-                    <div class="mailbox-entry action">Create folder</div>
+                    {{ end }}
                 </div>
+                <div class="mailbox-entry action">Create folder</div>
+            </div>
             {{ end }}
         </aside>
         <section id="mail-list" class="mail-list">
@@ -115,11 +120,8 @@
                                 <input type="email" placeholder="john@smith.com" />
                             </div>
                             <span class="input-label">From</span>
-                            <input type="text"
-                                   class="input-from no-clear"
-                                   placeholder="your@email.com"
-                                   value="{{ .GlobalData.Username }}"
-                                   data-default="{{ .GlobalData.Username }}" />
+                            <input type="text" class="input-from no-clear" placeholder="your@email.com"
+                                value="{{ .GlobalData.Username }}" data-default="{{ .GlobalData.Username }}" />
                             <span class="input-label">Cc</span>
                             <div class="input-cc multi-input">
                                 <input type="email" placeholder="sven@svensson.se" disabled />
@@ -147,52 +149,52 @@
 
 </html>
 {{ else }}
-    {{ range .Messages }}
-        {{ $classes := "item" }}
-        {{ if not (.HasFlag "\\Seen") }}
-            {{ $classes = printf "%s %s" $classes "unread" }}
-        {{ end }}
-        {{ if (.HasFlag "\\Deleted") }}
-            {{ $classes = printf "%s %s" $classes "deleted" }}
-        {{ end }}
+{{ range .Messages }}
+    {{ $classes := "item" }}
+    {{ if not (.HasFlag "\\Seen") }}
+        {{ $classes = printf "%s %s" $classes "unread" }}
+    {{ end }}
+    {{ if (.HasFlag "\\Deleted") }}
+        {{ $classes = printf "%s %s" $classes "deleted" }}
+    {{ end }}
 
-        {{ $selectedPart := -1 }}
-        {{ $selectedPartMime := "text/plain" }}
-        {{ if eq .BodyStructure.MIMEType "multipart" }}
-            {{ range $i, $part := .BodyStructure.Parts }}
-                {{ $mime := print $part.MIMEType "/" $part.MIMESubType }}
-                {{ if or (eq $mime "text/html") (eq $mime "multipart/alternative") }}
-                    {{ $selectedPart = $i }}
-                    {{ $selectedPartMime = $mime }}
-                {{ end }}
+    {{ $selectedPart := -1 }}
+    {{ $selectedPartMime := "text/plain" }}
+    {{ if eq .BodyStructure.MIMEType "multipart" }}
+        {{ range $i, $part := .BodyStructure.Parts }}
+        {{ $mime := print $part.MIMEType "/" $part.MIMESubType }}
+        {{ if or (eq $mime "text/html") (eq $mime "multipart/alternative") }}
+            {{ $selectedPart = $i }}
+            {{ $selectedPartMime = $mime }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+
+<div class="item {{ $classes }}"
+     data-uid="{{ .Uid }}"
+     {{ if ne $selectedPart -1 }}data-part="{{ $selectedPart }}" {{ end }}>
+    {{ if .HasFlag "\\Answered" }}<span class="replied">↩</span>{{ end }}
+    {{ if .HasFlag "$Forwarded" }}<span class="forwarded">↪</span>{{ end }}
+
+    <span class="sender">
+        {{ range .Envelope.From }}
+            {{ if .PersonalName }}
+                {{ .PersonalName }}
+            {{ else }}
+                {{ .MailboxName }}@{{ .HostName }}
             {{ end }}
         {{ end }}
-
-        <div class="item {{ $classes }}"
-                data-uid="{{ .Uid }}"
-                {{ if ne $selectedPart -1 }}data-part="{{ $selectedPart }}"{{ end }}>
-            {{ if .HasFlag "\\Answered" }}<span class="replied">↩</span>{{ end }}
-            {{ if .HasFlag "$Forwarded" }}<span class="forwarded">↪</span>{{ end }}
-
-            <span class="sender">
-                {{ range .Envelope.From }}
-                    {{ if .PersonalName }}
-                        {{ .PersonalName }}
-                    {{ else }}
-                        {{ .MailboxName }}@{{ .HostName }}
-                    {{ end }}
-                {{ end }}
-            </span>
-            <span class="time">
-                {{ .Envelope.Date | humantime }}
-            </span>
-            <span class="subject">
-                {{ if .Envelope.Subject }}
-                    {{ .Envelope.Subject }}
-                {{ else }}
-                    No subject
-                {{ end }}
-            </span>
-        </div>
-    {{ end }}
+    </span>
+    <span class="time">
+        {{ .Envelope.Date | humantime }}
+    </span>
+    <span class="subject">
+        {{ if .Envelope.Subject }}
+            {{ .Envelope.Subject }}
+        {{ else }}
+            No subject
+        {{ end }}
+    </span>
+</div>
+{{ end }}
 {{ end }}

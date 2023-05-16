@@ -38,6 +38,15 @@ async function mailboxSelected(mailboxEntry) {
     );
 }
 
+export function setUnreadCountFromSelected(value) {
+    activeMailbox.setAttribute("data-unread", value);
+    activeMailbox.querySelector(".unread-count").textContent = value;
+}
+
+export function getUnreadCountFromSelected() {
+    return Number(activeMailbox.getAttribute("data-unread"));
+}
+
 export async function init() {
     composeButton.addEventListener("click", () => {
         compose.intoNewMail(composePane);

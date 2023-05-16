@@ -1,4 +1,5 @@
 import * as mailContent from "../mailContent";
+import { getUnreadCountFromSelected, setUnreadCountFromSelected } from "../mailbox";
 
 const mailList = document.getElementById("mail-list");
 const mailDisplay = document.getElementById("mail-display");
@@ -77,8 +78,20 @@ async function selectEntry(entry, remoteContent) {
     }
 
     mailContent.init();
-
+    entry.classList.remove("unread");
+    setUnreadCountFromSelected(getUnreadCountFromSelected() - 1);
     lastSelectedEntry = entry;
+
+    const formData = new FormData();
+    formData.append("uids", uid);
+    formData.append("action", "add");
+    formData.append("flags", "\\Seen");
+
+    fetch(`/message/${mailboxName}/flag`, {
+        method: "POST",
+        credentials: "same-origin",
+        body: formData,
+    }).then();
 }
 
 export async function reload(name) {
