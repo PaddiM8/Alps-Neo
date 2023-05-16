@@ -1,3 +1,4 @@
+import * as events from "./events";
 import * as mailbox from "./mailbox";
 import * as compose from "./components/compose";
 import * as fileDrop from "./components/fileDrop";
@@ -6,6 +7,7 @@ import * as multiInput from "./components/multiInput";
 import * as trix from "./components/trix";
 import * as pane from "./components/pane";
 
+events.init();
 mailbox.init();
 
 compose.init();

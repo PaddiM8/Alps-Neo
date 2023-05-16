@@ -8,6 +8,11 @@ let lastLoadedPage = null;
 let lastLoadSuccessful = true;
 let mailboxName = "Inbox";
 
+async function fetchPage(mailboxName, page) {
+    const entriesResult = await fetch(`/mailbox/${mailboxName}?page=${page}`);
+    return await entriesResult.text();
+}
+
 async function loadEntries() {
     const page = lastLoadedPage == null
         ? 0
@@ -15,8 +20,7 @@ async function loadEntries() {
 
     try {
         const previousLength = mailList.children.length;
-        const entriesResult = await fetch(`/mailbox/${mailboxName}?page=${page}`);
-        const entries = await entriesResult.text();
+        const entries = await fetchPage(mailboxName, page);
 
         // Make sure to clear it after fetching to avoid flickering
         if (lastLoadedPage == null) {
@@ -51,7 +55,6 @@ async function selectEntry(entry, remoteContent) {
     entry.classList.add("active");
 
     const uid = entry.getAttribute("data-uid");
-    const part = Number(entry.getAttribute("data-part")) + 1;
     const remoteContentString = remoteContent ? "&allow-remote-resources=1" : "";
     const mail = await fetch(`/message/${mailboxName}/${uid}?preferredContentType=text%2Fhtml${remoteContentString}`);
     mailDisplay.innerHTML = await mail.text();
@@ -76,6 +79,16 @@ async function selectEntry(entry, remoteContent) {
     mailContent.init();
 
     lastSelectedEntry = entry;
+}
+
+export async function reload(name) {
+    const previousSelected = lastSelectedEntry.getAttribute("data-uid");
+    mailList.innerHTML = "";
+    await loadMailbox(name);
+
+    if (previousSelected) {
+        await selectEntry(mailList.querySelector(`[data-uid='${previousSelected}']`));
+    }
 }
 
 export async function removeSelected() {
