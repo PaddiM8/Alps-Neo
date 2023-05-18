@@ -1,5 +1,27 @@
 @use "values" as values
 
+.middle .actions
+    display: flex
+    padding: 0.4em
+    border-bottom: values.$border
+
+    .action
+        padding: 0.4em
+        border-radius: values.$radius
+        margin-left: 0.2em
+        color: #424242
+        cursor: pointer
+
+        &[disabled]
+            color: values.$gray-text-color
+            cursor: default
+
+        &:first-child
+            margin-left: auto
+
+        &:not([disabled]):hover
+            background-color: values.$selected-color
+
 .mail-list .item
     display: grid
     grid-template-areas: "mail-sender mail-time" "mail-subject mail-subject"

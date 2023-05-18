@@ -1,8 +1,10 @@
 import * as mailContent from "../mailContent";
+import * as actions from "../actions";
 import { getUnreadCountFromSelected, setUnreadCountFromSelected } from "../mailbox";
 
 const mailList = document.getElementById("mail-list");
 const mailDisplay = document.getElementById("mail-display");
+const actionsPanel = document.querySelector(".middle .actions");
 const shadowContent = document.createElement("div");
 let lastSelectedEntry = null;
 let lastLoadedPage = null;
@@ -48,12 +50,21 @@ function shouldLoadMore() {
         Math.abs(mailList.scrollHeight - mailList.scrollTop - mailList.clientHeight) < 10;
 }
 
+function enableActions() {
+    for (const action of actionsPanel.children) {
+        if (action.classList.contains("action")) {
+            action.removeAttribute("disabled");
+        }
+    }
+}
+
 async function selectEntry(entry, remoteContent) {
     if (lastSelectedEntry) {
         lastSelectedEntry.classList.remove("active");
     }
 
     entry.classList.add("active");
+    enableActions();
 
     const uid = entry.getAttribute("data-uid");
     const remoteContentString = remoteContent ? "&allow-remote-resources=1" : "";
@@ -78,20 +89,14 @@ async function selectEntry(entry, remoteContent) {
     }
 
     mailContent.init();
-    entry.classList.remove("unread");
     setUnreadCountFromSelected(getUnreadCountFromSelected() - 1);
     lastSelectedEntry = entry;
 
-    const formData = new FormData();
-    formData.append("uids", uid);
-    formData.append("action", "add");
-    formData.append("flags", "\\Seen");
+    if (entry.classList.contains("unread")) {
+        markIsRead(true).then();
+    }
 
-    fetch(`/message/${mailboxName}/flag`, {
-        method: "POST",
-        credentials: "same-origin",
-        body: formData,
-    }).then();
+    entry.classList.remove("unread");
 }
 
 export async function reload(name) {
@@ -126,10 +131,33 @@ export async function loadMailbox(name) {
     }
 }
 
+async function markIsRead(read) {
+    const uid = lastSelectedEntry.getAttribute("data-uid");
+    await actions.markEmailIsRead(uid, mailboxName, read);
+
+    const icon = actionsPanel.querySelector(".seen");
+    if (read) {
+        lastSelectedEntry.classList.remove("unread");
+        icon.classList.add("fa-envelope");
+        icon.classList.remove("fa-envelope-open");
+    } else {
+        lastSelectedEntry.classList.add("unread");
+        icon.classList.remove("fa-envelope");
+        icon.classList.add("fa-envelope-open");
+    }
+}
+
 export async function init() {
     mailList.addEventListener("scroll", async () => {
         if (shouldLoadMore()) {
             await loadEntries();
         }
+    });
+
+    actionsPanel.querySelector(".seen").addEventListener("click", async () => {
+        await markIsRead(lastSelectedEntry.classList.contains("unread"));
+    });
+    actionsPanel.querySelector(".delete").addEventListener("click", async () => {
+        await actions.removeMail(lastSelectedEntry.getAttribute("data-uid"), mailboxName);
     });
 }
