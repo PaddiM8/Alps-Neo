@@ -6,6 +6,7 @@ const composeButton = document.getElementById("compose-button");
 const composePane = document.getElementById("compose-pane");
 const mailboxes = document.getElementById("mailboxes");
 const initialMailbox = getMailboxByName(mailboxes.getAttribute("data-selected"));
+const initialTitle = document.title;
 let activeMailbox = initialMailbox;
 
 function getMailboxByName(name) {
@@ -41,10 +42,18 @@ async function mailboxSelected(mailboxEntry) {
 export function setUnreadCountFromSelected(value) {
     activeMailbox.setAttribute("data-unread", value);
     activeMailbox.querySelector(".unread-count").textContent = value;
+
+    if (activeMailbox.getAttribute("data-name") == "Inbox") {
+        document.title = `(${value}) ` + initialTitle;
+    }
 }
 
 export function getUnreadCountFromSelected() {
     return Number(activeMailbox.getAttribute("data-unread"));
+}
+
+function getUnreadCountFromMailbox(mailboxName) {
+    return Number(getMailboxByName(mailboxName).getAttribute("data-unread"));
 }
 
 export async function init() {
@@ -61,4 +70,7 @@ export async function init() {
             await mailboxSelected(mailboxEntry);
         });
     }
+
+    const unread = getUnreadCountFromMailbox("Inbox");
+    document.title = `(${unread}) ` + initialTitle;
 }
