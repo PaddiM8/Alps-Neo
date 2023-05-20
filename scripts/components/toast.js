@@ -1,6 +1,7 @@
-export function show(text, timeShow = 3250) {
+export function show(text, level = "info", timeShow = 3250) {
     const toast = document.createElement("div");
     toast.className = "toast";
+    toast.classList.add(level);
     toast.textContent = text;
 
     document.body.appendChild(toast);

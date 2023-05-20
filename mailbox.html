@@ -17,6 +17,8 @@
         {{ $icon = "fa-trash" }}
     {{- else if eq $name "Archive" -}}
         {{ $icon = "fa-box-archive" }}
+    {{- else -}}
+        {{ $icon = "fa-folder" }}
     {{- end -}}
 
     {{ $unreadCount := 0 }}
@@ -29,9 +31,11 @@
          data-name="{{ $name }}"
          data-unread="{{ $unreadCount }}">
         {{ if ne $name "" }}
-        <i class="fas {{ $icon }}"></i>
+            <i class="icon fas {{ $icon }}"></i>
         {{ end }}
-        {{ $name }}{{- if .Info.HasAttr "\\HasChildren" }}/{{ end }}
+        <span class="name">
+            {{ $name }}{{- if .Info.HasAttr "\\HasChildren" }}/{{ end }}
+        </span>
         <span class="unread-count"></span>
     </div>
     {{ else }}
@@ -95,7 +99,7 @@
                         {{ end }}
                     {{ end }}
                 </div>
-                <div class="mailbox-entry action">Create folder</div>
+                <div id="create-folder" class="mailbox-action">Create folder</div>
             </div>
             {{ end }}
         </aside>

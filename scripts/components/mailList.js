@@ -45,7 +45,6 @@ async function loadEntries() {
 }
 
 function shouldLoadMore() {
-    return false;
     return lastLoadSuccessful &&
         mailList.children.length > 0 &&
         Math.abs(mailList.scrollHeight - mailList.scrollTop - mailList.clientHeight) < 10;
