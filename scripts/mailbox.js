@@ -163,8 +163,10 @@ export async function init() {
     await mailList.loadMailbox(activeMailbox.getAttribute("data-name"));
 
     for (const entry of mailboxes.getElementsByClassName("mailbox-entry")) {
-        entry.querySelector(".name").addEventListener("click", async () => {
-            await mailboxSelected(entry);
+        entry.addEventListener("click", async e => {
+            if (!e.target.classList.contains("menu-button")) {
+                await mailboxSelected(entry);
+            }
         });
         entry.addEventListener("mouseenter", async () => {
             mouseEnter(entry);
