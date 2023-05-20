@@ -70,11 +70,16 @@ async function createMailbox(name) {
 }
 
 export function setUnreadCountFromSelected(value) {
+    value = Math.max(value, 0);
     activeMailbox.setAttribute("data-unread", value);
-    activeMailbox.querySelector(".unread-count").textContent = value;
+    activeMailbox.querySelector(".unread-count").textContent = value == 0
+        ? ""
+        : value;
 
     if (activeMailbox.getAttribute("data-name") == "Inbox") {
-        document.title = `(${value}) ` + initialTitle;
+        document.title = value == 0
+            ? initialTitle
+            : `(${value}) ` + initialTitle;
     }
 }
 
