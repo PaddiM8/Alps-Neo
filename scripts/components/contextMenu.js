@@ -25,11 +25,15 @@ function close(menu) {
     openMenu = null;
 }
 
-export function show(items, x, y) {
+export function show(items, byElement) {
+    const byElementRect = byElement.getBoundingClientRect();
+    const x = byElementRect.left;
+    const y = byElementRect.top + byElementRect.height;
+
     const menu = document.createElement("div");
     menu.className = "context-menu";
-    menu.style.top = x + "px";
-    menu.style.left = y + "px";
+    menu.style.left = x + "px";
+    menu.style.top = y + "px";
 
     for (const item of items) {
         const entry = document.createElement("div");
@@ -55,6 +59,15 @@ export function show(items, x, y) {
 
     openMenu = menu;
     document.body.appendChild(menu);
+
+    const rect = menu.getBoundingClientRect();
+    if (x + rect.width > document.body.clientWidth) {
+        menu.style.left = document.body.clientWidth - rect.width + "px";
+    }
+
+    if (y + rect.height > document.body.clientHeight) {
+        menu.style.top = document.body.clientHeight - rect.height + "px";
+    }
 
     setTimeout(() => {
         document.body.addEventListener("click", bodyClick);

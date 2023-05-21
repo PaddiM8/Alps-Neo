@@ -1,5 +1,6 @@
 import * as mailContent from "../mailContent";
 import * as actions from "../actions";
+import * as moveMenu from "./moveMenu";
 import { getUnreadCountFromSelected, setUnreadCountFromSelected } from "../mailbox";
 
 const mailList = document.getElementById("mail-list");
@@ -13,6 +14,10 @@ let mailboxName = "Inbox";
 
 async function fetchPage(mailboxName, page) {
     const entriesResult = await fetch(`/mailbox/${mailboxName}?page=${page}`);
+    if (entriesResult.status != 200) {
+        lastLoadSuccessful = false;
+    }
+
     return await entriesResult.text();
 }
 
@@ -22,14 +27,17 @@ async function loadEntries() {
         : lastLoadedPage + 1;
 
     try {
-        const previousLength = mailList.children.length;
         const entries = await fetchPage(mailboxName, page);
+        if (!entries.trim()) {
+            lastLoadSuccessful = false;
+        }
 
         // Make sure to clear it after fetching to avoid flickering
         if (lastLoadedPage == null) {
             mailList.innerHTML = "";
         }
 
+        const previousLength = mailList.children.length;
         mailList.insertAdjacentHTML("beforeend", entries);
         lastLoadedPage = page;
 
@@ -70,7 +78,7 @@ async function selectEntry(entry, remoteContent) {
     const remoteContentString = remoteContent ? "&allow-remote-resources=1" : "";
     const mail = await fetch(`/message/${mailboxName}/${uid}?preferredContentType=text%2Fhtml${remoteContentString}`);
     mailDisplay.innerHTML = await mail.text();
-    const remoteContentButton = mailDisplay.querySelector(".remote-content-button")
+    const remoteContentButton = mailDisplay.querySelector(".remote-content-button");
     if (remoteContentButton) {
         remoteContentButton.onclick = () => {
             selectEntry(entry, true);
@@ -107,6 +115,10 @@ export async function reload(name) {
     if (previousSelected) {
         await selectEntry(mailList.querySelector(`[data-uid='${previousSelected}']`));
     }
+}
+
+export function getSelected() {
+    return lastSelectedEntry;
 }
 
 export async function removeSelected() {
@@ -159,5 +171,8 @@ export async function init() {
     });
     actionsPanel.querySelector(".delete").addEventListener("click", async () => {
         await actions.removeMail(lastSelectedEntry.getAttribute("data-uid"), mailboxName);
+    });
+    actionsPanel.querySelector(".move").addEventListener("click", async e => {
+        moveMenu.show(lastSelectedEntry, e.target);
     });
 }

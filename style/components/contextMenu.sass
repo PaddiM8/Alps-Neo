@@ -2,11 +2,17 @@
 
 .context-menu
     position: fixed
+    max-height: 17.5em
+    overflow-y: auto
     background-color: values.$background-color
     border: values.$border
 
     .entry
+        width: 12em
         padding: 0.4em
+        overflow: hidden
+        white-space: nowrap
+        text-overflow: ellipsis
         cursor: pointer
 
         .icon

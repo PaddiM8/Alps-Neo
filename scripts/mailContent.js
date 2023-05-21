@@ -1,7 +1,8 @@
 import * as compose from "./components/compose";
-import * as mailList from "./components/mailList";
 import * as pane from "./components/pane";
 import * as actions from "./actions";
+import * as moveMenu from "./components/moveMenu";
+import * as mailList from "./components/mailList";
 
 const composePane = document.getElementById("compose-pane");
 
@@ -74,9 +75,15 @@ async function remove() {
     await actions.removeMail(getId(), getMailbox());
 }
 
+function move(e) {
+    const rect = e.target.getBoundingClientRect();
+    moveMenu.show(mailList.getSelected(), e.target);
+}
+
 export function init() {
     const actions = document.getElementById("mail-actions");
     actions.querySelector(".reply").addEventListener("click", reply);
     actions.querySelector(".forward").addEventListener("click", forward);
     actions.querySelector(".delete").addEventListener("click", remove);
+    actions.querySelector(".move").addEventListener("click", move);
 }

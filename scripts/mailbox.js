@@ -17,17 +17,34 @@ function getMailboxByName(name) {
     return mailboxes.querySelector(`.mailbox-entry[data-name="${name}"]`);
 }
 
+export function getAll() {
+    const names = [];
+    for (const mailbox of mailboxes.getElementsByClassName("mailbox-entry")) {
+        names.push(mailbox.getAttribute("data-name"));
+    }
+
+    return names;
+}
+
+export function getSelected() {
+    return activeMailbox;
+}
+
+export function getName(mailboxEntry) {
+    return mailboxEntry.getAttribute("data-name");
+}
+
 window.onpopstate = async e => {
     if (e.state) {
         if (e.state.mailboxName != activeMailbox.getAttribute("data-name")) {
-            await mailboxSelected(getMailboxByName(e.state.mailboxName));
+            await selectMailbox(getMailboxByName(e.state.mailboxName));
         }
     } else {
-        await mailboxSelected(initialMailbox);
+        await selectMailbox(initialMailbox);
     }
 };
 
-async function mailboxSelected(mailboxEntry) {
+async function selectMailbox(mailboxEntry) {
     activeMailbox.classList.remove("active");
     mailboxEntry.classList.add("active");
 
@@ -131,7 +148,6 @@ function mouseEnter(entry) {
 
         const mailboxName = entry.querySelector(".name").textContent.trim();
         menuButton.addEventListener("click", () => {
-            const rect = menuButton.getBoundingClientRect();
             contextMenu.show([
                 {
                     icon: "fa-folder",
@@ -143,7 +159,7 @@ function mouseEnter(entry) {
                     name: "Delete",
                     action: async () => await promptDelete(entry, mailboxName)
                 }
-            ], rect.top, rect.left);
+            ], menuButton);
         });
     }
 }
@@ -170,7 +186,7 @@ export async function init() {
     for (const entry of mailboxes.getElementsByClassName("mailbox-entry")) {
         entry.addEventListener("click", async e => {
             if (!e.target.classList.contains("menu-button")) {
-                await mailboxSelected(entry);
+                await selectMailbox(entry);
             }
         });
         entry.addEventListener("mouseenter", async () => {
