@@ -1,9 +1,9 @@
-import * as compose from "./components/compose";
-import * as mailList from "./components/mailList";
-import * as pane from "./components/pane";
-import * as dialog from "./components/dialog";
-import * as toast from "./components/toast";
-import * as contextMenu from "./components/contextMenu";
+import * as compose from "./compose";
+import * as mailList from "./mailList";
+import * as pane from "./pane";
+import * as dialog from "./dialog";
+import * as toast from "./toast";
+import * as contextMenu from "./contextMenu";
 
 const composeButton = document.getElementById("compose-button");
 const composePane = document.getElementById("compose-pane");
@@ -71,16 +71,13 @@ async function createMailbox(name) {
     });
 
     if (response.status == 200) {
-        entry = `
-            <div class="mailbox-entry" data-name="${name}" data-unread="0">
-                <i class="icon fas fa-folder"></i>
-                <span class="name">
-                    ${name}
-                </span>
-                <span class="unread-count"></span>
-            </div>
-        `;
-        mailboxes.querySelector(".additional-mailboxes").insertAdjacentHTML("beforeend", entry);
+        const newMailbox = mailboxes.querySelector(".standard-mailboxes").lastElementChild.cloneNode(true)
+        newMailbox.querySelector(".name").textContent = name;
+        newMailbox.querySelector(".icon").className = "icon fas fa-folder";
+        newMailbox.querySelector(".unread-count").textContent = "";
+        newMailbox.setAttribute("data-name", name);
+        newMailbox.setAttribute("data-unread", 0);
+        mailboxes.querySelector(".additional-mailboxes").appendChild(newMailbox);
     } else {
         toast.show("Failed to create mailbox", "error");
     }

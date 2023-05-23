@@ -1,5 +1,5 @@
 import * as contextMenu from "./contextMenu";
-import * as mailbox from "../mailbox";
+import * as mailbox from "./mailboxList";
 import * as actions from "../actions";
 
 export function show(mailEntry, byElement) {

@@ -8,7 +8,7 @@ function humanFileSize(number) {
     }
 }
 
-async function removeRemoteFile(fileDrop, fileElement) {
+async function removeRemoteFile(fileElement) {
     const removeClient = new XMLHttpRequest();
     const uuid = fileElement.getAttribute("data-uuid");
     if (uuid) {
@@ -82,7 +82,7 @@ async function uploadFile(fileDrop, fileInfo) {
             client.abort();
         }
 
-        await removeRemoteFile(fileDrop, fileElement);
+        await removeRemoteFile(fileElement);
     });
 
 
@@ -128,7 +128,7 @@ export function clearUuids(fileDrop) {
 export async function clear(fileDrop) {
     const list = fileDrop.querySelector(".list");
     for (const attachment of list.children) {
-        await removeRemoteFile(fileDrop, attachment);
+        await removeRemoteFile(attachment);
     }
 
     list.innerHTML = "";

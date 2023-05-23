@@ -1,7 +1,7 @@
 import * as mailContent from "../mailContent";
 import * as actions from "../actions";
 import * as moveMenu from "./moveMenu";
-import { getUnreadCountFromSelected, setUnreadCountFromSelected } from "../mailbox";
+import { getUnreadCountFromSelected, setUnreadCountFromSelected } from "./mailboxList";
 
 const mailList = document.getElementById("mail-list");
 const mailDisplay = document.getElementById("mail-display");

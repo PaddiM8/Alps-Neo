@@ -1,7 +1,7 @@
 import * as dialog from "./components/dialog";
 import * as mailList from "./components/mailList";
 import * as toast from "./components/toast";
-import * as mailbox from "./mailbox";
+import * as mailbox from "./components/mailboxList";
 
 export async function getPreviousAttachments(mailbox, mailId, textPart) {
     const result = await fetch(`/message/${mailbox}/${mailId}/forward?part=${textPart}`);

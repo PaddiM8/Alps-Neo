@@ -1,5 +1,5 @@
 import * as mailList from "./components/mailList";
-import * as mailbox from "./mailbox";
+import * as mailbox from "./components/mailboxList";
 
 async function updateMailbox(name) {
     await mailList.reload(name);
