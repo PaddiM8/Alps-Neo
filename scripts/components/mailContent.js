@@ -1,8 +1,8 @@
-import * as compose from "./components/compose";
-import * as pane from "./components/pane";
-import * as actions from "./actions";
-import * as moveMenu from "./components/moveMenu";
-import * as mailList from "./components/mailList";
+import * as compose from "./compose";
+import * as pane from "./pane";
+import * as actions from "../actions";
+import * as moveMenu from "./moveMenu";
+import * as mailList from "./mailList";
 
 const composePane = document.getElementById("compose-pane");
 
@@ -76,7 +76,6 @@ async function remove() {
 }
 
 function move(e) {
-    const rect = e.target.getBoundingClientRect();
     moveMenu.show(mailList.getSelected(), e.target);
 }
 

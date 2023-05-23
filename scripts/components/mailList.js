@@ -1,4 +1,4 @@
-import * as mailContent from "../mailContent";
+import * as mailContent from "./mailContent";
 import * as actions from "../actions";
 import * as moveMenu from "./moveMenu";
 import { getUnreadCountFromSelected, setUnreadCountFromSelected } from "./mailboxList";
