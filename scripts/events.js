@@ -1,4 +1,5 @@
 import * as mailList from "./components/mailList";
+import * as mailbox from "./mailbox";
 
 async function updateMailbox(name) {
     await mailList.reload(name);
@@ -13,7 +14,14 @@ export function init() {
         const value = data.slice(separationIndex + 1).trim();
 
         if (type == "mailbox") {
-            await updateMailbox(value);
+            let mailboxName = value == "INBOX"
+                ? "Inbox"
+                : value;
+
+            // TODO: Update the unread count if the mailbox isn't selected
+            if (mailbox.getName(mailbox.getSelected()) == mailboxName) {
+                await updateMailbox(mailboxName);
+            }
         } else {
             console.log(type, value);
         }

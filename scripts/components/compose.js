@@ -2,6 +2,7 @@ import * as fileDrop from "./fileDrop";
 import * as multiInput from "./multiInput";
 import * as pane from "./pane";
 import * as toast from "./toast";
+import * as actions from "../actions";
 
 const composePane = document.getElementById("compose-pane");
 const attachmentArea = composePane.querySelector(".attachment-area");
@@ -22,17 +23,6 @@ function showError() {
 
 function hideError() {
     composePane.querySelector(".error").classList.add("hidden");
-}
-
-async function generateMessageId() {
-    const result = await fetch("/compose");
-    if (!result.ok) {
-        return null;
-    }
-
-    const text = (await result.text()).trim();
-
-    return "<" + text.slice(4, -4) + ">";
 }
 
 async function submit(kind = "normal") {
@@ -59,83 +49,31 @@ async function submit(kind = "normal") {
     const messageElement = composePane.querySelector(".input-message")
     const html = `<html><body>${messageElement.value}</body></html>`;
 
-    const formData = new FormData();
-    formData.append("from", from);
-    formData.append("to", to.join(","));
-    formData.append("subject", subject);
-    formData.append("text", messageElement.textContent);
-    formData.append("html", html);
-    formData.append("attachment-uuids", attachmentUuids.join(","));
-    formData.append("content_type", "text/html");
+    const data = {
+        from: from,
+        to: to,
+        subject: subject,
+        text: messageElement.textContent,
+        html: html,
+        attachmentUuids: attachmentUuids,
+        prevAttachments: context.toForward ? prevAttachments : null,
+        saveAsDraft: kind == "draft",
+        inReplyTo: context.inReplyTo,
+        toForward: context.toForward,
+    };
 
-    if (context.toForward && prevAttachments.length > 0) {
-        for (const prevAttachment of prevAttachments) {
-            formData.append("prev_attachments", prevAttachment);
-        }
-    }
-
-    if (kind == "draft") {
-        formData.append("save_as_draft", "1");
-    }
-
-    const messageId = await generateMessageId();
-    if (!messageId) {
-        showError();
-        return;
-    }
-
-    formData.append("message_id", messageId);
-
-    let url = "/compose";
-    if (context.inReplyTo) {
-        url = `/message/${context.inReplyTo}/reply`;
-    } else if (context.toForward) {
-        url = `/message/${context.toForward}/forward`;
-    }
-
-    const response = await fetch(url, {
-        method: "POST",
-        credentials: "same-origin",
-        body: formData,
-    });
-
-    // Seems to redirect on success only. Checking status code
-    // is not reliable, since it returns 200 even when when errors
-    // happen.
-    if (response.redirected && response.headers.get("location") == "/mailbox/INBOX") {
-        toast.show("Email was sent.");
+    const success = await actions.sendMail(data);
+    if (success && kind == "draft") {
+        toast.show("Saved as draft.");
         fileDrop.clearUuids(attachmentArea);
         pane.close(composePane);
-    } else if (kind == "draft") {
-        toast.show("Saved as draft.");
+    } else if (success) {
+        toast.show("Email was sent.");
         fileDrop.clearUuids(attachmentArea);
         pane.close(composePane);
     } else {
         showError();
     }
-}
-
-async function getPreviousAttachments(mailbox, mailId, textPart) {
-    const result = await fetch(`/message/${mailbox}/${mailId}/forward?part=${textPart}`);
-    const lines = (await result.text()).split("\n");
-    const attachments = [];
-    for (const line of lines) {
-        if (!line.trim()) {
-            continue;
-        }
-
-        const trimmedLine = line.trim();
-        if (attachments.length == 0 ||
-            Object.keys(attachments[attachments.length - 1]).length == 2) {
-            attachments.push({
-                partString: trimmedLine
-            });
-        } else {
-            attachments[attachments.length - 1]["name"] = trimmedLine;
-        }
-    }
-
-    return attachments;
 }
 
 export function intoNewMail() {
@@ -177,7 +115,7 @@ export async function intoForward(mailbox, mailId, textPart, date, from, to, sub
     editor.setSelectedRange([0, 0]);
 
     // Previous attachments
-    const attachments = await getPreviousAttachments(mailbox, mailId, textPart);
+    const attachments = await actions.getPreviousAttachments(mailbox, mailId, textPart);
     for (const attachment of attachments) {
         const fileEntry = fileDrop.addFileEntry(attachmentArea, attachment.name, null, true);
         fileEntry.setAttribute("data-prev", attachment.partString);

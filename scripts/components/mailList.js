@@ -113,7 +113,10 @@ export async function reload(name) {
     await loadMailbox(name);
 
     if (previousSelected) {
-        await selectEntry(mailList.querySelector(`[data-uid='${previousSelected}']`));
+        const previousSelectedEntry = mailList.querySelector(`[data-uid='${previousSelected}']`);
+        if (previousSelectedEntry) {
+            await selectEntry(previousSelectedEntry);
+        }
     }
 }
 
