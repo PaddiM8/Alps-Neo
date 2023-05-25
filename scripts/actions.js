@@ -115,6 +115,19 @@ export async function markEmailIsRead(id, mailbox, read) {
     });
 }
 
+export async function createMailbox(name) {
+    const formData = new FormData();
+    formData.append("name", name);
+
+    const response = await fetch(`/new-mailbox`, {
+        method: "POST",
+        credentials: "same-origin",
+        body: formData,
+    });
+
+    return response.status == 200;
+}
+
 export async function moveToMailbox(name, mailEntry) {
     const formData = new FormData();
     formData.append("to", name);

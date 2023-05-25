@@ -1,5 +1,5 @@
 import * as events from "./events";
-import * as mailbox from "./mailbox";
+import * as mailbox from "./components/mailboxList";
 import * as compose from "./components/compose";
 import * as fileDrop from "./components/fileDrop";
 import * as mailList from "./components/mailList";

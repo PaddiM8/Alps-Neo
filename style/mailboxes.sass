@@ -6,7 +6,7 @@
     & > *
         margin: 0.4em 0.4em
 
-    .mailbox-entry, .mailbox-action
+    .mailbox-entry .self, .mailbox-action
         display: flex
         align-items: center
         padding: 0.4em 0.8em
@@ -34,6 +34,27 @@
         .icon
             padding-right: 0.6em
 
+        .arrow
+            $offset-x: 0.1em
+            $size: 1.25em
+            display: block
+            width: $size - $offset-x
+            height: $size
+            line-height: $size
+            padding-left: $offset-x
+            text-align: center
+            margin-left: -0.6em
+            margin-right: 0.2em
+            border-radius: 100%
+
+            &.fa-angle-down
+                $offset-y: 0.1em
+                height: $size - $offset-y
+                padding-top: $offset-y
+
+            &:hover
+                background-color: #BDBDBD
+
         .menu-button
             margin-left: auto
             padding: 0 0.4em
@@ -51,6 +72,9 @@
         color: values.$link-color-dark
         font-size: 0.87em
         padding: 0.5em 0.9em
+
+    .mailbox-entry .children
+        padding-left: 0.4em
 
 .mailbox-label
     display: block

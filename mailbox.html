@@ -1,9 +1,9 @@
 {{ define "mailbox-link" }}
-{{ if not (.Info.HasAttr "\\Noselect") }}
     {{ $name := .Info.Name }}
     {{- if eq $name "INBOX" -}}
         {{ $name = "Inbox" }}
     {{- end -}}
+
     {{ $icon := "" }}
     {{- if eq $name "Inbox" -}}
         {{ $icon = "fa-inbox" }}
@@ -28,21 +28,19 @@
         {{ end }}
     {{ end }}
     <div class="mailbox-entry"
-         data-name="{{ $name }}"
-         data-unread="{{ $unreadCount }}">
-        {{ if ne $name "" }}
-            <i class="icon fas {{ $icon }}"></i>
-        {{ end }}
-        <span class="name">
-            {{ $name }}{{- if .Info.HasAttr "\\HasChildren" }}/{{ end }}
-        </span>
-        <span class="unread-count"></span>
-    </div>
-    {{ else }}
-        <div class="noselect">
-            {{ .Info.Name }}{{- if .Info.HasAttr "\\HasChildren" }}/{{ end }}
+        data-name="{{ $name }}"
+        data-unread="{{ $unreadCount }}">
+        <div class="self">
+            {{ if ne $name "" }}
+                <i class="icon fas {{ $icon }}"></i>
+            {{ end }}
+            <span class="name">
+                {{ $name }}{{- if .Info.HasAttr "\\HasChildren" }}/{{ end }}
+            </span>
+            <span class="unread-count"></span>
         </div>
-    {{ end }}
+        <div class="children hidden"></div>
+    </div>
 {{ end }}
 
 {{ $pageQuery := index .GlobalData.URL.Query "page" }}

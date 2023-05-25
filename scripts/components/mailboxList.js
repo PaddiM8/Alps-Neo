@@ -4,6 +4,7 @@ import * as pane from "./pane";
 import * as dialog from "./dialog";
 import * as toast from "./toast";
 import * as contextMenu from "./contextMenu";
+import * as actions from "../actions";
 
 const composeButton = document.getElementById("compose-button");
 const composePane = document.getElementById("compose-pane");
@@ -45,8 +46,8 @@ window.onpopstate = async e => {
 };
 
 async function selectMailbox(mailboxEntry) {
-    activeMailbox.classList.remove("active");
-    mailboxEntry.classList.add("active");
+    activeMailbox.querySelector(".self").classList.remove("active");
+    mailboxEntry.querySelector(".self").classList.add("active");
 
     const mailboxName = mailboxEntry.getAttribute("data-name");
     mailboxes.setAttribute("data-selected", mailboxName);
@@ -58,29 +59,6 @@ async function selectMailbox(mailboxEntry) {
         "",
         `/mailbox/${mailboxName}`
     );
-}
-
-async function createMailbox(name) {
-    const formData = new FormData();
-    formData.append("name", name);
-
-    const response = await fetch(`/new-mailbox`, {
-        method: "POST",
-        credentials: "same-origin",
-        body: formData,
-    });
-
-    if (response.status == 200) {
-        const newMailbox = mailboxes.querySelector(".standard-mailboxes").lastElementChild.cloneNode(true)
-        newMailbox.querySelector(".name").textContent = name;
-        newMailbox.querySelector(".icon").className = "icon fas fa-folder";
-        newMailbox.querySelector(".unread-count").textContent = "";
-        newMailbox.setAttribute("data-name", name);
-        newMailbox.setAttribute("data-unread", 0);
-        mailboxes.querySelector(".additional-mailboxes").appendChild(newMailbox);
-    } else {
-        toast.show("Failed to create mailbox", "error");
-    }
 }
 
 export function setUnreadCountFromSelected(value) {
@@ -105,13 +83,23 @@ function getUnreadCountFromMailbox(mailboxName) {
     return Number(getMailboxByName(mailboxName).getAttribute("data-unread"));
 }
 
-async function promptCreateSubfolder(mailboxName) {
+async function promptCreateSubfolder(parentMailboxEntry) {
     const result = await dialog.showInput("Create subfolder", "Choose a subfolder name", "Folder name...");
     if (!result) {
         return;
     }
 
-    alert("Unimplemented. Would've created a folder under: " + mailboxName);
+    if (result.includes(" ")) {
+        toast.show("Mailbox name cannot contain whitespace", "error");
+        return;
+    }
+
+    let path = parentMailboxEntry.getAttribute("data-name") + "/" + result;
+    if (await actions.createMailbox(path)) {
+        createEntry(parentMailboxEntry.querySelector(".children"), result);
+    } else {
+        toast.show("Failed to create mailbox", "error");
+    }
 }
 
 async function promptDelete(entry, mailboxName) {
@@ -128,20 +116,28 @@ async function promptDelete(entry, mailboxName) {
     });
 
     if (response.status == 200) {
-        entry.parentElement.removeChild(entry);
+        const container = entry.parentElement;
+        container.removeChild(entry);
+
+        if (container.children.length == 0) {
+            const arrow = container.parentElement.querySelector(".arrow");
+            if (arrow) {
+                arrow.parentElement.removeChild(arrow);
+            }
+        }
     } else {
         toast.show("Failed to delete mailbox.", "error");
     }
 }
 
 function mouseEnter(entry) {
-    let menuButton = entry.querySelector(".menu-button");
+    let menuButton = entry.querySelector(".self .menu-button");
     if (menuButton) {
         menuButton.classList.remove("hidden");
     } else {
         menuButton = document.createElement("i");
         menuButton.className = "menu-button fas fa-ellipsis-vertical";
-        entry.appendChild(menuButton);
+        entry.querySelector(".self").appendChild(menuButton);
 
         const mailboxName = entry.querySelector(".name").textContent.trim();
         menuButton.addEventListener("click", () => {
@@ -149,7 +145,7 @@ function mouseEnter(entry) {
                 {
                     icon: "fa-folder",
                     name: "Create subfolder",
-                    action: async () => await promptCreateSubfolder(mailboxName)
+                    action: async () => await promptCreateSubfolder(entry)
                 },
                 {
                     icon: "fa-trash",
@@ -165,15 +161,112 @@ function mouseLeave(entry) {
     entry.querySelector(".menu-button")?.classList.add("hidden");
 }
 
+function createArrow(entry) {
+    const childContainer = entry.querySelector(".children");
+    const arrow = document.createElement("i");
+    arrow.className = "arrow fas";
+
+    const isClosed = entry.querySelector(".children").classList.contains("hidden");
+    arrow.classList.add(isClosed ? "fa-angle-right" : "fa-angle-down");
+
+    arrow.addEventListener("click", () => {
+        arrow.classList.toggle("fa-angle-right");
+        arrow.classList.toggle("fa-angle-down");
+        childContainer.classList.toggle("hidden");
+    });
+    entry.querySelector(".self").insertAdjacentElement("afterbegin", arrow);
+
+    return arrow;
+}
+
+function createEntry(container, name, unreadCount = 0) {
+    const newMailbox = mailboxes.querySelector(".standard-mailboxes").lastElementChild.cloneNode(true)
+    newMailbox.querySelector(".name").textContent = name;
+    newMailbox.querySelector(".icon").className = "icon fas fa-folder";
+    newMailbox.querySelector(".unread-count").textContent = unreadCount == 0 ? "" : unreadCount;
+    newMailbox.setAttribute("data-name", name);
+    newMailbox.setAttribute("data-unread", unreadCount);
+    container.appendChild(newMailbox);
+
+    const parentEntry = container.parentElement;
+    if (parentEntry.classList.contains("mailbox-entry")) {
+        const parentSelf = container.parentElement.querySelector(".self");
+        if (!parentSelf.querySelector(".arrow")) {
+            createArrow(parentEntry);
+        }
+    }
+
+    return newMailbox;
+}
+
+function buildEntryTree(containerElement, tree) {
+    // TODO: When a folder is removed and the parent no longer has any children,
+    // the arrow should be removed.
+    // When a child folder is added, it should be added to the tree locally as
+    // well.
+
+    for (const name in tree) {
+        const folder = tree[name];
+        containerElement.appendChild(folder.entry);
+        folder.entry.querySelector(".name").textContent = name;
+        if (!folder.children || !Object.keys(folder.children).length) {
+            continue;
+        }
+
+        const arrow = createArrow(folder.entry);
+        folder.entry.querySelector(".self").insertAdjacentElement("afterbegin", arrow);
+
+        buildEntryTree(
+            folder.entry.querySelector(".children"),
+            folder.children
+        );
+    }
+}
+
+function nestChildren() {
+    const folders = {};
+    const additionalMailboxes = mailboxes.querySelector(".additional-mailboxes");
+    const entries = additionalMailboxes.getElementsByClassName("mailbox-entry");
+    for (const entry of entries) {
+        const path = entry.getAttribute("data-name").split("/");
+        let obj = { children: folders };
+        let objName = "";
+        while (path.length > 0) {
+            const name = path.shift();
+            objName += objName ? "/" + name : name;
+            if (!(name in obj.children)) {
+                const parentContainer = obj.entry?.querySelector(".children") ?? additionalMailboxes;
+                obj.children[name] = {
+                    entry: getMailboxByName(objName) ?? createEntry(parentContainer, objName),
+                    children: {}
+                };
+            }
+
+            obj = obj.children[name];
+        }
+    }
+
+    additionalMailboxes.innerHTML = "";
+    buildEntryTree(additionalMailboxes, folders);
+}
+
 export async function init() {
+    nestChildren();
+
     composeButton.addEventListener("click", () => {
         compose.intoNewMail(composePane);
         pane.show(composePane);
     });
     createFolderButton.addEventListener("click", async () => {
         const name = await dialog.showInput("Create folder", "Choose a folder name", "Folder name...");
-        if (name) {
-            createMailbox(name);
+        if (!name) {
+            return;
+        }
+
+        if (await actions.createMailbox(name)) {
+            createEntry(mailboxes.querySelector(".additional-mailboxes"), name);
+        } else {
+            toast.show("Failed to create mailbox", "error");
         }
     });
 
@@ -181,15 +274,17 @@ export async function init() {
     await mailList.loadMailbox(activeMailbox.getAttribute("data-name"));
 
     for (const entry of mailboxes.getElementsByClassName("mailbox-entry")) {
-        entry.addEventListener("click", async e => {
-            if (!e.target.classList.contains("menu-button")) {
+        const self = entry.querySelector(".self");
+        self.addEventListener("click", async e => {
+            if (!e.target.classList.contains("menu-button") &&
+                !e.target.classList.contains("arrow")) {
                 await selectMailbox(entry);
             }
         });
-        entry.addEventListener("mouseenter", async () => {
+        self.addEventListener("mouseenter", async () => {
             mouseEnter(entry);
         });
-        entry.addEventListener("mouseleave", async () => {
+        self.addEventListener("mouseleave", async () => {
             mouseLeave(entry);
         });
     }
