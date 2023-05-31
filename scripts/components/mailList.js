@@ -76,8 +76,8 @@ async function loadEntries() {
         : lastLoadedPage + 1;
 
     try {
-        const entries = await fetchPage(mailboxName, page);
-        if (!entries.trim()) {
+        const entries = (await fetchPage(mailboxName, page)).trim();
+        if (!entries) {
             lastLoadSuccessful = false;
         }
 
@@ -88,6 +88,13 @@ async function loadEntries() {
 
         const previousLength = mailList.children.length;
         mailList.insertAdjacentHTML("beforeend", entries);
+
+        if (mailList.children.length == 0) {
+            mailList.classList.add("empty");
+        } else {
+            mailList.classList.remove("empty");
+        }
+
         lastLoadedPage = page;
 
         for (let i = previousLength; i < mailList.children.length; i++) {

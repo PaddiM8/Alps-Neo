@@ -22,6 +22,17 @@
         &:not([disabled]):hover
             background-color: values.$selected-color
 
+.mail-list
+    position: relative
+
+    &.empty::before
+        position: absolute
+        top: 0.5em
+        left: 0.5em
+        font-size: 0.9em
+        color: values.$gray-text-color
+        content: "Empty mailbox."
+
 .mail-list .item
     display: grid
     grid-template-areas: "mail-sender mail-time" "mail-subject mail-subject"
