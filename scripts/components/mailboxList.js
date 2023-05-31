@@ -141,7 +141,7 @@ function mouseEnter(entry) {
 
         const mailboxName = entry.querySelector(".name").textContent.trim();
         menuButton.addEventListener("click", () => {
-            contextMenu.show([
+            contextMenu.showByElement([
                 {
                     icon: "fa-folder",
                     name: "Create subfolder",
@@ -200,11 +200,6 @@ function createEntry(container, name, unreadCount = 0) {
 }
 
 function buildEntryTree(containerElement, tree) {
-    // TODO: When a folder is removed and the parent no longer has any children,
-    // the arrow should be removed.
-    // When a child folder is added, it should be added to the tree locally as
-    // well.
-
     for (const name in tree) {
         const folder = tree[name];
         containerElement.appendChild(folder.entry);

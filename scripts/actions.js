@@ -82,29 +82,37 @@ export async function sendMail(data) {
         data.saveAsDraft && response.url.includes("/message/Drafts/");
 }
 
-export async function removeMail(id, mailbox) {
+export async function removeMail(uids, mailbox) {
     const confirmation = await dialog.showYesNo(
         "Delete Mail",
         "Are you sure you want to delete this mail?",
         true
     );
 
-    if (confirmation == "yes") {
-        const formData = new FormData();
-        formData.append("uids", id);
-        await fetch(`/message/${mailbox}/delete`, {
-            method: "POST",
-            credentials: "same-origin",
-            body: formData,
-        });
-
-        await mailList.removeSelected();
+    if (confirmation != "yes") {
+        return false;
     }
+
+    const formData = new FormData();
+    for (const uid of uids) {
+        formData.append("uids", uid);
+    }
+
+    const response = await fetch(`/message/${mailbox}/delete`, {
+        method: "POST",
+        credentials: "same-origin",
+        body: formData,
+    });
+
+    return response.status == 200;
 }
 
-export async function markEmailIsRead(id, mailbox, read) {
+export async function markEmailIsRead(uids, mailbox, read) {
     const formData = new FormData();
-    formData.append("uids", id);
+    for (const uid of uids) {
+        formData.append("uids", uid);
+    }
+
     formData.append("action", read ? "add" : "remove");
     formData.append("flags", "\\Seen");
 
@@ -128,10 +136,13 @@ export async function createMailbox(name) {
     return response.status == 200;
 }
 
-export async function moveToMailbox(name, mailEntry) {
+export async function moveToMailbox(uids, name) {
     const formData = new FormData();
-    formData.append("to", name);
-    formData.append("uids", mailEntry.getAttribute("data-uid"));
+    for (const uid of uids) {
+        formData.append("uids", uid);
+    }
+
+    formData.append("to", name == "Inbox" ? "INBOX" : name);
 
     const url = `/message/${mailbox.getName(mailbox.getSelected())}/move`;
     const response = await fetch(url, {
@@ -140,9 +151,5 @@ export async function moveToMailbox(name, mailEntry) {
         body: formData,
     });
 
-    if (response.status == 200) {
-        mailEntry.parentElement.removeChild(mailEntry);
-    } else {
-        toast.show("Unable to move mail(s)", "error");
-    }
+    return response.status == 200;
 }

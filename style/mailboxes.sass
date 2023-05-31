@@ -14,6 +14,7 @@
         border-radius: values.$radius
         cursor: pointer
         color: #424242
+        user-select: none
 
         &.active, &:hover
             background-color: values.$selected-color
@@ -26,6 +27,7 @@
 
         .unread-count
             &:not(:empty)::before
+                margin-left: 0.3em
                 content: '('
 
             &:not(:empty)::after

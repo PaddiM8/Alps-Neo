@@ -18,7 +18,7 @@ function getDate() {
     return getMail().querySelector(".mail-header .time").textContent.trim();
 }
 
-function getId() {
+function getUid() {
     return getMail().getAttribute("data-uid");
 }
 
@@ -48,7 +48,7 @@ function getBody() {
 function reply() {
     compose.intoReply(
         getMailbox(),
-        getId(),
+        getUid(),
         getSender(),
         getRecipient(),
         getSubject(),
@@ -60,7 +60,7 @@ function reply() {
 async function forward() {
     await compose.intoForward(
         getMailbox(),
-        getId(),
+        getUid(),
         getTextPart(),
         getDate(),
         getSender(),
@@ -72,11 +72,11 @@ async function forward() {
 }
 
 async function remove() {
-    await actions.removeMail(getId(), getMailbox());
+    await actions.removeMail(getUid(), getMailbox());
 }
 
 function move(e) {
-    moveMenu.show(mailList.getSelected(), e.target);
+    moveMenu.show(mailList.getEntryByUid(getUid()), e.target);
 }
 
 export function init() {

@@ -25,12 +25,19 @@ function close(menu) {
     openMenu = null;
 }
 
-export function show(items, byElement) {
-    const byElementRect = byElement.getBoundingClientRect();
-    const x = byElementRect.left;
-    const y = byElementRect.top + byElementRect.height;
+export function showByElement(items, byElement) {
+    const rect = byElement.getBoundingClientRect();
+    showAtPos(items, rect.left, rect.top + rect.height);
+}
+
+export function showAtPos(items, x, y) {
+    const existing = document.getElementById("context-menu");
+    if (existing) {
+        close(existing);
+    }
 
     const menu = document.createElement("div");
+    menu.id = "context-menu";
     menu.className = "context-menu";
     menu.style.left = x + "px";
     menu.style.top = y + "px";

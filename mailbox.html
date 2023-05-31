@@ -37,7 +37,7 @@
             <span class="name">
                 {{ $name }}{{- if .Info.HasAttr "\\HasChildren" }}/{{ end }}
             </span>
-            <span class="unread-count"></span>
+            <span class="unread-count">{{ if and (ne $unreadCount 0) (eq $name "Inbox") }}{{ $unreadCount }}{{ end }}</span>
         </div>
         <div class="children hidden"></div>
     </div>

@@ -1,8 +1,9 @@
 import * as contextMenu from "./contextMenu";
 import * as mailbox from "./mailboxList";
+import * as mailList from "./mailList";
 import * as actions from "../actions";
 
-export function show(mailEntry, byElement) {
+export function show(mailListEntries, byElement) {
     const mailboxes = [];
     for (const name of mailbox.getAll()) {
         if (name == mailbox.getName(mailbox.getSelected())) {
@@ -13,10 +14,23 @@ export function show(mailEntry, byElement) {
             {
                 icon: "fa-folder",
                 name: name,
-                action: async () => await actions.moveToMailbox(name, mailEntry)
+                action: async () => {
+                    const success = await actions.moveToMailbox(
+                        mailListEntries.map(x => mailList.getUid(x)),
+                        name
+                    );
+
+                    if (success) {
+                        for (const entry of mailListEntries) {
+                            entry.parentElement.removeChild(entry);
+                        }
+                    } else {
+                        toast.show("Unable to move mail(s)", "error");
+                    }
+                }
             }
         );
     }
 
-    contextMenu.show(mailboxes, byElement);
+    contextMenu.showByElement(mailboxes, byElement);
 }
