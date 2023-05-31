@@ -217,6 +217,14 @@ function isEntryRead(entry) {
     return !entry.classList.contains("unread");
 }
 
+export async function selectFirst() {
+    if (mailList.children.length == 0) {
+        return;
+    }
+
+    await selectEntry(mailList.children[0]);
+}
+
 export async function removeSelected() {
     for (const selected of selectedEntries) {
         mailList.removeChild(selected);

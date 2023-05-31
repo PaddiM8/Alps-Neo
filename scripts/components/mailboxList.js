@@ -302,5 +302,9 @@ export async function init() {
     const unread = getUnreadCountFromMailbox("Inbox");
     document.title = `(${unread}) ` + initialTitle;
 
-    selectMailbox(mailboxes.querySelector(".mailbox-entry"));
+    const lastSlash = window.location.href.lastIndexOf("/");
+    const urlMailbox = window.location.href.slice(lastSlash + 1);
+
+    await selectMailbox(getMailboxByName(urlMailbox));
+    await mailList.selectFirst();
 }
