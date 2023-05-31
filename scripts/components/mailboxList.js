@@ -130,6 +130,23 @@ async function promptDelete(entry, mailboxName) {
     }
 }
 
+function createContextMenuItems(entry) {
+    const mailboxName = entry.querySelector(".name").textContent.trim();
+
+    return [
+        {
+            icon: "fa-folder",
+            name: "Create subfolder",
+            action: async () => await promptCreateSubfolder(entry)
+        },
+        {
+            icon: "fa-trash",
+            name: "Delete",
+            action: async () => await promptDelete(entry, mailboxName)
+        }
+    ];
+}
+
 function mouseEnter(entry) {
     let menuButton = entry.querySelector(".self .menu-button");
     if (menuButton) {
@@ -139,20 +156,8 @@ function mouseEnter(entry) {
         menuButton.className = "menu-button fas fa-ellipsis-vertical";
         entry.querySelector(".self").appendChild(menuButton);
 
-        const mailboxName = entry.querySelector(".name").textContent.trim();
         menuButton.addEventListener("click", () => {
-            contextMenu.showByElement([
-                {
-                    icon: "fa-folder",
-                    name: "Create subfolder",
-                    action: async () => await promptCreateSubfolder(entry)
-                },
-                {
-                    icon: "fa-trash",
-                    name: "Delete",
-                    action: async () => await promptDelete(entry, mailboxName)
-                }
-            ], menuButton);
+            contextMenu.showByElement(createContextMenuItems(entry), menuButton);
         });
     }
 }
@@ -276,6 +281,16 @@ export async function init() {
                 await selectMailbox(entry);
             }
         });
+        self.oncontextmenu = e => {
+            if (entry.parentElement.classList.contains("standard-mailboxes")) {
+                return false;
+            }
+
+            selectMailbox(entry);
+            contextMenu.showAtPos(createContextMenuItems(entry), e.clientX, e.clientY);
+
+            return false;
+        };
         self.addEventListener("mouseenter", async () => {
             mouseEnter(entry);
         });
@@ -286,4 +301,6 @@ export async function init() {
 
     const unread = getUnreadCountFromMailbox("Inbox");
     document.title = `(${unread}) ` + initialTitle;
+
+    selectMailbox(mailboxes.querySelector(".mailbox-entry"));
 }

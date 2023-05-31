@@ -25,6 +25,10 @@ function close(menu) {
     openMenu = null;
 }
 
+export function isOpen() {
+    return document.getElementById("context-menu") != null;
+}
+
 export function showByElement(items, byElement) {
     const rect = byElement.getBoundingClientRect();
     showAtPos(items, rect.left, rect.top + rect.height);
