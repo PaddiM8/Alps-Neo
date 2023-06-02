@@ -293,6 +293,14 @@ function nestChildren() {
     buildEntryTree(additionalMailboxes, folders);
 }
 
+function expandParents(entry) {
+    let parent = entry.parentElement?.parentElement;
+    while (parent?.classList.contains("mailbox-entry")) {
+        revealChildren(parent);
+        parent = parent.parentElement?.parentElement;
+    }
+}
+
 export async function init() {
     nestChildren();
 
@@ -368,6 +376,8 @@ export async function init() {
 
     const unread = getUnreadCountFromMailbox("Inbox");
     document.title = `(${unread}) ` + initialTitle;
+
+    expandParents(initialMailbox);
 
     if (initialMailbox) {
         await mailList.loadMailbox(getName(initialMailbox));
