@@ -1,5 +1,7 @@
 @use "values" as values
 
+@mixin entry-active
+
 .mailboxes
     background-color: values.$background-color-dark
 
@@ -7,18 +9,24 @@
         margin: 0.4em 0.4em
 
     .mailbox-entry .self, .mailbox-action
+        $padding-x: 0.4em
+        $padding-y: 0.8em
         display: flex
         align-items: center
-        padding: 0.4em 0.8em
+        padding: $padding-x $padding-y
         font-size: 0.97em
         border-radius: values.$radius
         cursor: pointer
         color: #424242
         user-select: none
 
-        &.active, &:hover
+        &.active, &:hover, &.drag-over
             background-color: values.$selected-color
             outline: 1px solid transparent
+
+        &.drag-over
+            border: 2px solid cornflowerblue
+            padding: calc(#{$padding-x} - 2px) calc(#{$padding-y} - 2px)
 
         .name
             display: block

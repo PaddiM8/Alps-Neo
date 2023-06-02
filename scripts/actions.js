@@ -4,7 +4,7 @@ import * as toast from "./components/toast";
 import * as mailbox from "./components/mailboxList";
 
 export async function getPreviousAttachments(mailbox, mailId, textPart) {
-    const result = await fetch(`/message/${mailbox}/${mailId}/forward?part=${textPart}`);
+    const result = await fetch(`/message/${encodeURIComponent(mailbox)}/${mailId}/forward?part=${textPart}`);
     const lines = (await result.text()).split("\n");
     const attachments = [];
     for (const line of lines) {
@@ -98,7 +98,7 @@ export async function removeMail(uids, mailbox) {
         formData.append("uids", uid);
     }
 
-    const response = await fetch(`/message/${mailbox}/delete`, {
+    const response = await fetch(`/message/${encodeURIComponent(mailbox)}/delete`, {
         method: "POST",
         credentials: "same-origin",
         body: formData,
@@ -116,7 +116,7 @@ export async function markEmailIsRead(uids, mailbox, read) {
     formData.append("action", read ? "add" : "remove");
     formData.append("flags", "\\Seen");
 
-    await fetch(`/message/${mailbox}/flag`, {
+    await fetch(`/message/${encodeURIComponent(mailbox)}/flag`, {
         method: "POST",
         credentials: "same-origin",
         body: formData,
@@ -144,7 +144,7 @@ export async function moveToMailbox(uids, name) {
 
     formData.append("to", name == "Inbox" ? "INBOX" : name);
 
-    const url = `/message/${mailbox.getName(mailbox.getSelected())}/move`;
+    const url = `/message/${encodeURIComponent(mailbox.getName(mailbox.getSelected()))}/move`;
     const response = await fetch(url, {
         method: "POST",
         credentials: "same-origin",

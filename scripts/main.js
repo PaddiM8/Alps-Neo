@@ -7,6 +7,7 @@ import * as multiInput from "./components/multiInput";
 import * as trix from "./components/trix";
 import * as pane from "./components/pane";
 
+
 events.init();
 mailbox.init();
 

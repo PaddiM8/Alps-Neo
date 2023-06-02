@@ -2,6 +2,7 @@ import * as mailContent from "./mailContent";
 import * as actions from "../actions";
 import * as moveMenu from "./moveMenu";
 import * as contextMenu from "./contextMenu";
+import * as dragDrop from "./dragDrop";
 import { getUnreadCountFromSelected, setUnreadCountFromSelected } from "./mailboxList";
 
 const mailList = document.getElementById("mail-list");
@@ -15,7 +16,7 @@ let lastLoadSuccessful = true;
 let mailboxName = "Inbox";
 
 async function fetchPage(mailboxName, page) {
-    const entriesResult = await fetch(`/mailbox/${mailboxName}?page=${page}`);
+    const entriesResult = await fetch(`/mailbox/${encodeURIComponent(mailboxName)}?page=${page}`);
     if (entriesResult.status != 200) {
         lastLoadSuccessful = false;
     }
@@ -24,20 +25,20 @@ async function fetchPage(mailboxName, page) {
 }
 
 function setUpEntry(entry) {
-    entry.onclick = async e => {
+    dragDrop.makeDraggable(entry);
+
+    entry.onmousedown = async e => {
         if (e.ctrlKey && isEntrySelected(entry)) {
             await unselectEntry(entry);
             return;
         }
 
-        await selectEntry(entry, showRemoteContent, !e.ctrlKey);
+        if (!isEntrySelected(entry)) {
+            await selectEntry(entry, showRemoteContent, !e.ctrlKey);
+        }
     };
 
     entry.oncontextmenu = e => {
-        if (!isEntrySelected(entry)) {
-            selectEntry(entry);
-        }
-
         const isRead = isEntryRead(entry);
         contextMenu.showAtPos([
             {
@@ -132,7 +133,7 @@ async function selectEntry(entry, remoteContent = showRemoteContent, clearSelect
 
     const uid = getUid(entry);
     const remoteContentString = remoteContent ? "&allow-remote-resources=1" : "";
-    const mail = await fetch(`/message/${mailboxName}/${uid}?preferredContentType=text%2Fhtml${remoteContentString}`);
+    const mail = await fetch(`/message/${encodeURIComponent(mailboxName)}/${uid}?preferredContentType=text%2Fhtml${remoteContentString}`);
     mailDisplay.innerHTML = await mail.text();
     const remoteContentButton = mailDisplay.querySelector(".remote-content-button");
     if (remoteContentButton) {

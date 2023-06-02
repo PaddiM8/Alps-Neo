@@ -4,24 +4,33 @@ import * as pane from "./pane";
 import * as dialog from "./dialog";
 import * as toast from "./toast";
 import * as contextMenu from "./contextMenu";
+import * as dragDrop from "./dragDrop";
 import * as actions from "../actions";
 
 const composeButton = document.getElementById("compose-button");
 const composePane = document.getElementById("compose-pane");
 const mailboxes = document.getElementById("mailboxes");
 const createFolderButton = document.getElementById("create-folder");
-const initialMailbox = getMailboxByName(mailboxes.getAttribute("data-selected"));
+const initialMailbox = mailboxes.querySelector(".active").parentElement;
 const initialTitle = document.title;
 let activeMailbox = initialMailbox;
+const dragStatus = {
+    lastDraggedOver: null,
+    timeout: null,
+};
 
 function getMailboxByName(name) {
+    if (name == "INBOX") {
+        name = "Inbox";
+    }
+
     return mailboxes.querySelector(`.mailbox-entry[data-name="${name}"]`);
 }
 
 export function getAll() {
     const names = [];
     for (const mailbox of mailboxes.getElementsByClassName("mailbox-entry")) {
-        names.push(mailbox.getAttribute("data-name"));
+        names.push(getName(mailbox));
     }
 
     return names;
@@ -37,7 +46,7 @@ export function getName(mailboxEntry) {
 
 window.onpopstate = async e => {
     if (e.state) {
-        if (e.state.mailboxName != activeMailbox.getAttribute("data-name")) {
+        if (e.state.mailboxName != getName(activeMailbox)) {
             await selectMailbox(getMailboxByName(e.state.mailboxName));
         }
     } else {
@@ -49,7 +58,7 @@ async function selectMailbox(mailboxEntry) {
     activeMailbox.querySelector(".self").classList.remove("active");
     mailboxEntry.querySelector(".self").classList.add("active");
 
-    const mailboxName = mailboxEntry.getAttribute("data-name");
+    const mailboxName = getName(mailboxEntry);
     mailboxes.setAttribute("data-selected", mailboxName);
     await mailList.loadMailbox(mailboxName);
 
@@ -68,7 +77,7 @@ export function setUnreadCountFromSelected(value) {
         ? ""
         : value;
 
-    if (activeMailbox.getAttribute("data-name") == "Inbox") {
+    if (getName(activeMailbox) == "Inbox") {
         document.title = value == 0
             ? initialTitle
             : `(${value}) ` + initialTitle;
@@ -94,7 +103,7 @@ async function promptCreateSubfolder(parentMailboxEntry) {
         return;
     }
 
-    let path = parentMailboxEntry.getAttribute("data-name") + "/" + result;
+    let path = getName(parentMailboxEntry) + "/" + result;
     if (await actions.createMailbox(path)) {
         createEntry(parentMailboxEntry.querySelector(".children"), result);
     } else {
@@ -109,7 +118,7 @@ async function promptDelete(entry, mailboxName) {
     }
 
     const formData = new FormData();
-    const response = await fetch(`/delete-mailbox/${encodeURI(mailboxName)}`, {
+    const response = await fetch(`/delete-mailbox/${encodeURIComponent(mailboxName)}`, {
         method: "POST",
         credentials: "same-origin",
         body: formData,
@@ -166,22 +175,56 @@ function mouseLeave(entry) {
     entry.querySelector(".menu-button")?.classList.add("hidden");
 }
 
-function createArrow(entry) {
+function revealChildren(entry) {
+    const arrow = entry.querySelector(".arrow");
+    if (!arrow) {
+        return;
+    }
+
+    arrow.classList.remove("fa-angle-right");
+    arrow.classList.add("fa-angle-down");
+
     const childContainer = entry.querySelector(".children");
+    childContainer.classList.remove("hidden");
+}
+
+function hideChildren(entry) {
+    const arrow = entry.querySelector(".arrow");
+    arrow.classList.add("fa-angle-right");
+    arrow.classList.remove("fa-angle-down");
+
+    const childContainer = entry.querySelector(".children");
+    childContainer.classList.add("hidden");
+}
+
+function areChildrenRevealed(entry) {
+    const arrow = entry.querySelector(".arrow");
+
+    return !arrow || arrow.classList.contains("fa-angle-down");
+}
+
+function createArrow(entry) {
     const arrow = document.createElement("i");
     arrow.className = "arrow fas";
+    entry.querySelector(".self").insertAdjacentElement("afterbegin", arrow);
 
     const isClosed = entry.querySelector(".children").classList.contains("hidden");
     arrow.classList.add(isClosed ? "fa-angle-right" : "fa-angle-down");
 
     arrow.addEventListener("click", () => {
-        arrow.classList.toggle("fa-angle-right");
-        arrow.classList.toggle("fa-angle-down");
-        childContainer.classList.toggle("hidden");
+        if (areChildrenRevealed(entry)) {
+            hideChildren(entry);
+        } else {
+            revealChildren(entry);
+        }
     });
-    entry.querySelector(".self").insertAdjacentElement("afterbegin", arrow);
 
     return arrow;
+}
+
+async function handleDrop(mailboxName) {
+    await actions.moveToMailbox(mailList.getSelected().map(x => mailList.getUid(x)), mailboxName);
+    mailList.removeSelected();
 }
 
 function createEntry(container, name, unreadCount = 0) {
@@ -228,7 +271,7 @@ function nestChildren() {
     const additionalMailboxes = mailboxes.querySelector(".additional-mailboxes");
     const entries = additionalMailboxes.getElementsByClassName("mailbox-entry");
     for (const entry of entries) {
-        const path = entry.getAttribute("data-name").split("/");
+        const path = getName(entry).split("/");
         let obj = { children: folders };
         let objName = "";
         while (path.length > 0) {
@@ -270,11 +313,9 @@ export async function init() {
         }
     });
 
-    activeMailbox.classList.add("active");
-    await mailList.loadMailbox(activeMailbox.getAttribute("data-name"));
-
     for (const entry of mailboxes.getElementsByClassName("mailbox-entry")) {
         const self = entry.querySelector(".self");
+        dragDrop.makeDropTarget(self, "mail-entry", async () => await handleDrop(getName(entry)));
         self.addEventListener("click", async e => {
             if (!e.target.classList.contains("menu-button") &&
                 !e.target.classList.contains("arrow")) {
@@ -297,14 +338,40 @@ export async function init() {
         self.addEventListener("mouseleave", async () => {
             mouseLeave(entry);
         });
+        self.addEventListener("dragover", e => {
+            e.preventDefault();
+
+            if (dragStatus.lastDraggedOver == self) {
+                return;
+            }
+
+            if (dragStatus.timeout) {
+                clearTimeout(dragStatus.timeout);
+            }
+
+            dragStatus.lastDraggedOver = self;
+            const previouslyDragged = dragDrop.getDragged();
+            dragStatus.timeout = setTimeout(() => {
+                // If it's still being dragged, reveal the children
+                if (previouslyDragged == dragDrop.getDragged()) {
+                    revealChildren(entry);
+                }
+            }, 1000);
+        });
+        self.addEventListener("dragleave", () => {
+            if (dragStatus.lastDraggedOver == self) {
+                dragStatus.lastDraggedOver = null;
+                clearTimeout(dragStatus.timeout);
+            }
+        });
     }
 
     const unread = getUnreadCountFromMailbox("Inbox");
     document.title = `(${unread}) ` + initialTitle;
 
-    const lastSlash = window.location.href.lastIndexOf("/");
-    const urlMailbox = window.location.href.slice(lastSlash + 1);
+    if (initialMailbox) {
+        await mailList.loadMailbox(getName(initialMailbox));
+    }
 
-    await selectMailbox(getMailboxByName(urlMailbox));
     await mailList.selectFirst();
 }

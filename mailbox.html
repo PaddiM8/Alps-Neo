@@ -30,7 +30,7 @@
     <div class="mailbox-entry"
         data-name="{{ $name }}"
         data-unread="{{ $unreadCount }}">
-        <div class="self">
+        <div class="self {{ if .Info.Active }}active{{ end }}">
             {{ if ne $name "" }}
                 <i class="icon fas {{ $icon }}"></i>
             {{ end }}
@@ -178,7 +178,7 @@
     {{ end }}
 {{ end }}
 
-<div class="item {{ $classes }}"
+<div class="item mail-entry {{ $classes }}"
      data-uid="{{ .Uid }}"
      {{ if ne $selectedPart -1 }}data-part="{{ $selectedPart }}" {{ end }}>
     {{ if .HasFlag "\\Answered" }}<span class="replied">↩</span>{{ end }}
