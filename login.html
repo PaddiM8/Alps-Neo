@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{ template "head-content.html" }}
+    <title>Webmail Login</title>
+</head>
+<body>
+    <main class="login">
+        <h1>Webmail Login</h1>
+
+        <form method="post" action="/login">
+            <div class="group">
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username" autofocus />
+            </div>
+
+            <div class="group">
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" />
+            </div>
+
+            <button type="submit" class="primary">Login</button>
+        </form>
+    </main>
+</body>
+</html>
