@@ -4,6 +4,7 @@ import * as pane from "./pane";
 import * as toast from "./toast";
 import * as actions from "../actions";
 import * as settings from "../settings";
+import * as dialog from "./dialog";
 
 const composePane = document.getElementById("compose-pane");
 const attachmentArea = composePane.querySelector(".attachment-area");
@@ -50,6 +51,18 @@ async function submit(kind = "normal") {
     const messageElement = composePane.querySelector(".input-message")
     const html = `<html><body>${messageElement.value}</body></html>`;
 
+    if (to.length == 0 || from.length == 0) {
+        showError();
+        return;
+    }
+
+    if (subject.length == 0) {
+        const accept = await dialog.showYesNo("No subject", "Are you sure you want to send an email without a subject?");
+        if (accept != "yes") {
+            return;
+        }
+    }
+
     const data = {
         from: from,
         to: to,
@@ -82,7 +95,11 @@ export function intoNewMail() {
     pane.setTitle(composePane, "Write an Email");
     const fromInput = composePane.querySelector(".input-from");
     fromInput.value = fromInput.getAttribute("data-default");
-    composePane.querySelector(".input-message").value = `<br><br>${settings.get().signature}`;
+
+    const signature = settings.get().signature;
+    if (signature) {
+        composePane.querySelector(".input-message").value = `<br><br>${signature}`;
+    }
 }
 
 export function intoReply(mailbox, mailId, to, from, subject, content) {

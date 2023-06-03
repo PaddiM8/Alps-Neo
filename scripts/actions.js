@@ -154,10 +154,11 @@ export async function moveToMailbox(uids, name) {
 
 export async function getSettings() {
     const response = await fetch("/user-settings");
+    const json = await response.text();
 
-    return response.status == 200
-        ? await response.json()
-        : null;
+    return response.status == 200 && json
+        ? JSON.parse(json)
+        : {};
 }
 
 export async function setSettings(obj) {
