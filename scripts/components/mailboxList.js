@@ -7,8 +7,6 @@ import * as contextMenu from "./contextMenu";
 import * as dragDrop from "./dragDrop";
 import * as actions from "../actions";
 
-const composeButton = document.getElementById("compose-button");
-const composePane = document.getElementById("compose-pane");
 const mailboxes = document.getElementById("mailboxes");
 const createFolderButton = document.getElementById("create-folder");
 const initialMailbox = mailboxes.querySelector(".active").parentElement;
@@ -304,10 +302,6 @@ function expandParents(entry) {
 export async function init() {
     nestChildren();
 
-    composeButton.addEventListener("click", () => {
-        compose.intoNewMail(composePane);
-        pane.show(composePane);
-    });
     createFolderButton.addEventListener("click", async () => {
         const name = await dialog.showInput("Create folder", "Choose a folder name", "Folder name...");
         if (!name) {

@@ -3,6 +3,7 @@ import * as multiInput from "./multiInput";
 import * as pane from "./pane";
 import * as toast from "./toast";
 import * as actions from "../actions";
+import * as settings from "../settings";
 
 const composePane = document.getElementById("compose-pane");
 const attachmentArea = composePane.querySelector(".attachment-area");
@@ -81,6 +82,7 @@ export function intoNewMail() {
     pane.setTitle(composePane, "Write an Email");
     const fromInput = composePane.querySelector(".input-from");
     fromInput.value = fromInput.getAttribute("data-default");
+    composePane.querySelector(".input-message").value = `<br><br>${settings.get().signature}`;
 }
 
 export function intoReply(mailbox, mailId, to, from, subject, content) {

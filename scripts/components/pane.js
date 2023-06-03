@@ -51,6 +51,11 @@ export function unminimise(pane) {
 export function show(pane) {
     pane.previousElementSibling.style.height = lastSize ?? "25vh";
     pane.classList.remove("hidden");
+
+    const defaultFocus = pane.querySelector(".default-focus");
+    if (defaultFocus) {
+        defaultFocus.focus();
+    }
 }
 
 export function setTitle(pane, title) {

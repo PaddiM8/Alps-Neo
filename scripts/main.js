@@ -22,3 +22,10 @@ settings.init().then(x => {
     pane.init();
     navigation.init();
 });
+
+const composeButton = document.getElementById("compose-button");
+const composePane = document.getElementById("compose-pane");
+composeButton.addEventListener("click", () => {
+    compose.intoNewMail(composePane);
+    pane.show(composePane);
+});
