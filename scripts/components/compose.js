@@ -90,9 +90,15 @@ async function submit(kind = "normal") {
     }
 }
 
-export function intoNewMail() {
+export function intoNewMail(to = null) {
     clearContext();
     pane.setTitle(composePane, "Write an Email");
+
+    if (to) {
+        const toInput = composePane.querySelector(".input-to");
+        multiInput.setValues(toInput, [to]);
+    }
+
     const fromInput = composePane.querySelector(".input-from");
     fromInput.value = fromInput.getAttribute("data-default");
 

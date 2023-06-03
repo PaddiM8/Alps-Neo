@@ -9,6 +9,7 @@ import * as multiInput from "./components/multiInput";
 import * as trix from "./components/trix";
 import * as pane from "./components/pane";
 import * as navigation from "./components/navigation";
+import * as injection from "./injection";
 
 settings.init().then(x => {
     events.init();
@@ -21,6 +22,7 @@ settings.init().then(x => {
     multiInput.init();
     pane.init();
     navigation.init();
+    injection.init();
 });
 
 const composeButton = document.getElementById("compose-button");
