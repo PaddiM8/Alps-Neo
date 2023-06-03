@@ -1,3 +1,11 @@
+{{ define "addr-list" }}
+  {{ range $i, $addr := . }}
+    {{ if $i }},{{ end }}
+    {{ .PersonalName }}
+    &lt;<a href="mailto:{{ .Address }}">{{ .Address }}</a>&gt;
+  {{ end }}
+{{ end }}
+
 <div id="mail"
      class="mail"
      data-uid="{{ .Message.Uid }}"

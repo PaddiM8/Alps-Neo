@@ -324,22 +324,6 @@ export async function init() {
                 await selectMailbox(entry);
             }
         });
-        self.oncontextmenu = e => {
-            if (entry.parentElement.classList.contains("standard-mailboxes")) {
-                return false;
-            }
-
-            selectMailbox(entry);
-            contextMenu.showAtPos(createContextMenuItems(entry), e.clientX, e.clientY);
-
-            return false;
-        };
-        self.addEventListener("mouseenter", async () => {
-            mouseEnter(entry);
-        });
-        self.addEventListener("mouseleave", async () => {
-            mouseLeave(entry);
-        });
         self.addEventListener("dragover", e => {
             e.preventDefault();
 
@@ -360,11 +344,32 @@ export async function init() {
                 }
             }, 1000);
         });
+
+        if (entry.parentElement.classList.contains("standard-mailboxes")) {
+            continue;
+        }
+
         self.addEventListener("dragleave", () => {
             if (dragStatus.lastDraggedOver == self) {
                 dragStatus.lastDraggedOver = null;
                 clearTimeout(dragStatus.timeout);
             }
+        });
+        self.oncontextmenu = e => {
+            if (entry.parentElement.classList.contains("standard-mailboxes")) {
+                return false;
+            }
+
+            selectMailbox(entry);
+            contextMenu.showAtPos(createContextMenuItems(entry), e.clientX, e.clientY);
+
+            return false;
+        };
+        self.addEventListener("mouseenter", async () => {
+            mouseEnter(entry);
+        });
+        self.addEventListener("mouseleave", async () => {
+            mouseLeave(entry);
         });
     }
 
