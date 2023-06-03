@@ -1,14 +1,41 @@
 @use "components/components"
-@use "mailboxes"
-@use "mail-list"
+@use "components/mailboxes"
+@use "components/mail-list"
+@use "components/navigation"
 @use "mail-content"
 @use "compose"
+@use "settings"
 @use "values" as values
 
 @use "../fonts/fontawesome/css/solid.min"
 @use "../fonts/fontawesome/css/fontawesome.min"
 
 $header-height: 3em
+
+h1
+    font-size: 1.6em
+    font-weight: 600
+    margin-top: 0.6em
+    margin-bottom: 0.6em
+
+    &:first-child
+        margin-top: 0
+
+h3
+    font-size: 1.2em
+    font-weight: 600
+    margin-top: 0.4em
+    margin-bottom: 0.4em
+
+select
+    min-width: 8em
+    border: 0
+    border-radius: values.$radius
+    padding: 0.4em
+    background-color: values.$button-color
+
+    &:hover
+        background-color: values.$button-color-hover
 
 body
     display: flex
@@ -31,14 +58,23 @@ header
     padding: 0.4em 1em
 
     .logo
-        width: auto
-        height: calc(100% - 0.3em)
-        margin-left: 0.2em
-        margin-right: 0.5em
+        display: flex
+        align-items: center
+        height: 100%
+        cursor: pointer
 
-    h1
-        margin: 0
-        font-size: 1.4em
+        img
+            width: auto
+            height: calc(100% - 0.3em)
+            margin-left: 0.2em
+            margin-right: 0.5em
+
+        h1
+            margin: 0
+            font-size: 1.4em
+
+    .left
+        margin-left: 0.4em
 
     .right
         margin-left: auto
@@ -57,11 +93,13 @@ header
             text-decoration: underline
 
 main.mailbox
-    display: grid
     height: calc(100vh - $header-height)
     grid-template-columns: 200px 300px minmax(0, 1fr)
     grid-template-rows: minmax(0, 1fr)
     box-sizing: border-box
+
+    &.active
+        display: grid
 
     & > *
         border-right: values.$border

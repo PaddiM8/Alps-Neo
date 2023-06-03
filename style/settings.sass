@@ -1,0 +1,32 @@
+@use "values" as values
+
+main.settings
+    flex-direction: column
+    width: 32em
+    height: 100%
+    margin: 0 auto
+    padding: 1.2em
+    border-left: values.$border
+    border-right: values.$border
+
+    &.active
+        display: flex
+
+    .buttons
+        display: flex
+        gap: 0.4em
+        margin-left: auto
+
+    label
+        font-weight: 500
+        font-size: 0.95em
+
+    .group
+        margin-bottom: 1em
+
+        & > *
+            display: block
+            margin-bottom: 0.2em
+
+    .signature-area
+        height: 8em

@@ -1,0 +1,58 @@
+import * as dialog from "./components/dialog";
+import * as navigation from "./components/navigation";
+import * as toast from "./components/toast";
+import * as actions from "./actions";
+
+const element = document.getElementById("settings");
+let changedSinceLastSave = false;
+let settings = {};
+
+async function load() {
+    settings = await actions.getSettings();
+    if ("theme" in settings) {
+        document.getElementById("theme").value = settings.theme;
+    }
+
+    if ("signature" in settings) {
+        document.getElementById("signature").value = settings.signature;
+    }
+}
+
+async function save() {
+    settings = {
+        theme: document.getElementById("theme").value,
+        signature: document.getElementById("signature").value,
+    };
+
+    return await actions.setSettings(settings);
+}
+
+export function get() {
+    return settings;
+}
+
+export function init() {
+    document.getElementById("cancel-settings").addEventListener("click", async () => {
+        if (changedSinceLastSave) {
+            const result = await dialog.showYesNo("Discard changes", "Are you sure you want to discard the changes?");
+            if (!result) {
+                return;
+            }
+        }
+
+        navigation.select("mailbox");
+        await load();
+    });
+    document.getElementById("save-settings").addEventListener("click", async () => {
+        if (await save()) {
+            toast.show("Saved settings.");
+            navigation.select("mailbox");
+        }
+    });
+
+    element.addEventListener("change", () => changedSinceLastSave = true);
+    element.querySelector(".signature-area")
+        .addEventListener("input", () => changedSinceLastSave = true);
+
+    load();
+}

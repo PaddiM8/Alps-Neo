@@ -93,7 +93,7 @@ export function intoReply(mailbox, mailId, to, from, subject, content) {
 
     const editor = composePane.querySelector(".input-message").editor;
     editor.insertString("\n\n---");
-    const attachment = new Trix.Attachment({ content: `<blockquote>${content}</blockquote>` })
+    const attachment = new Trix.Attachment({ content: `<blockquote>${content}</blockquote>` });
     editor.insertAttachment(attachment);
     editor.setSelectedRange([0, 0]);
 }

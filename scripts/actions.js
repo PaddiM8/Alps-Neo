@@ -1,6 +1,4 @@
 import * as dialog from "./components/dialog";
-import * as mailList from "./components/mailList";
-import * as toast from "./components/toast";
 import * as mailbox from "./components/mailboxList";
 
 export async function getPreviousAttachments(mailbox, mailId, textPart) {
@@ -146,6 +144,27 @@ export async function moveToMailbox(uids, name) {
 
     const url = `/message/${encodeURIComponent(mailbox.getName(mailbox.getSelected()))}/move`;
     const response = await fetch(url, {
+        method: "POST",
+        credentials: "same-origin",
+        body: formData,
+    });
+
+    return response.status == 200;
+}
+
+export async function getSettings() {
+    const response = await fetch("/user-settings");
+
+    return response.status == 200
+        ? await response.json()
+        : null;
+}
+
+export async function setSettings(obj) {
+    const formData = new FormData();
+    formData.append("json", JSON.stringify(obj));
+
+    const response = await fetch(`/user-settings`, {
         method: "POST",
         credentials: "same-origin",
         body: formData,
