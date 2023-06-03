@@ -12,7 +12,7 @@
             left: 50%
             transform: translate(-50%, -50%)
             font-size: 0.8em
-            color: #424242
+            color: values.$tinted-text-color
             content: "Drop files here"
 
     &.dragging-over .list::before
@@ -24,7 +24,7 @@
         top: $border-margin
         left: $border-margin
         box-sizing: border-box
-        border: 2px dashed #BDBDBD
+        border: 2px dashed values.$text-background
         border-radius: values.$radius
 
     .file
@@ -32,7 +32,7 @@
         display: flex
         padding: 0.5em 0.8em
         font-size: 0.8em
-        background-color: #BDBDBD
+        background-color: values.$text-background
         border-bottom: values.$border
 
         & > *
@@ -51,7 +51,7 @@
                 display: none
 
         &.uploaded, &.available
-            background-color: #EEEEEE
+            background-color: values.$background-color-dark
 
             &::before
                 display: none

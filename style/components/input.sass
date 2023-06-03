@@ -1,9 +1,15 @@
 @use "../values" as values
 
+::placeholder
+    color: values.$placeholder-color
+    opacity: 1
+
 input, textarea, .textarea
     padding: 0.4em 0.6em
     border: values.$border
     border-radius: values.$radius
+    color: values.$input-text-color
+    background-color: values.$input-background
 
 .multi-input:focus-within,
 input:focus,
@@ -15,8 +21,9 @@ textarea:focus,
 .multi-input
     display: flex
     flex-direction: row
-    border: 1px solid #D3D3D3
+    border: values.$border
     border-radius: values.$radius
+    background-color: values.$input-background
 
     .input-box
         display: flex
@@ -24,7 +31,7 @@ textarea:focus,
         padding: 0.2em 0.4em
         font-size: 0.8em
         margin: 0.2em
-        background-color: #CFD8DC
+        background-color: values.$accent-color
         border-radius: values.$radius
         box-sizing: border-box
         cursor: pointer

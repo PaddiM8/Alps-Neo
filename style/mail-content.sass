@@ -38,7 +38,7 @@
         grid-area: actions
         margin-left: auto
         font-size: 0.85em
-        color: #424242
+        color: values.$tinted-text-color
         cursor: default
 
         .action
@@ -48,7 +48,7 @@
             cursor: pointer
 
             &:hover
-                background-color: #E0E0E0
+                background-color: values.$selected-color
 
             i
                 margin-right: 0.4em
@@ -95,7 +95,7 @@
 
         .attachment-size
             font-size: 0.8em
-            color: #424242
+            color: values.$tinted-text-color
 
     .content
         overflow: auto
@@ -110,7 +110,7 @@
         padding: 0.8em
 
         border-radius: values.$radius
-        background-color: #EEEEEE
+        background-color: values.$background-color-dark
         font-size: 0.9em
 
         & > *:first-child

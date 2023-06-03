@@ -2,6 +2,7 @@ import * as dialog from "./components/dialog";
 import * as navigation from "./components/navigation";
 import * as toast from "./components/toast";
 import * as actions from "./actions";
+import * as themes from "./themes";
 
 const element = document.getElementById("settings");
 let changedSinceLastSave = false;
@@ -31,7 +32,7 @@ export function get() {
     return settings;
 }
 
-export function init() {
+export async function init() {
     document.getElementById("cancel-settings").addEventListener("click", async () => {
         if (changedSinceLastSave) {
             const result = await dialog.showYesNo("Discard changes", "Are you sure you want to discard the changes?");
@@ -49,10 +50,14 @@ export function init() {
             navigation.select("mailbox");
         }
     });
+    const theme = document.getElementById("theme");
+    theme.addEventListener("change", () => {
+        themes.set(theme.value);
+    });
 
     element.addEventListener("change", () => changedSinceLastSave = true);
     element.querySelector(".signature-area")
         .addEventListener("input", () => changedSinceLastSave = true);
 
-    load();
+    await load();
 }

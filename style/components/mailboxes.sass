@@ -17,7 +17,7 @@
         font-size: 0.97em
         border-radius: values.$radius
         cursor: pointer
-        color: #424242
+        color: values.$tinted-text-color
         user-select: none
 
         &.active, &:hover, &.drag-over
@@ -63,20 +63,20 @@
                 padding-top: $offset-y
 
             &:hover
-                background-color: #BDBDBD
+                background-color: values.$text-background
 
         .menu-button
             margin-left: auto
             padding: 0 0.4em
             margin-right: -0.2em
-            color: #424242
+            color: values.$tinted-text-color
             border-radius: 0.2em
             cursor: pointer
             transition: 100ms ease rotate
 
             &:hover
                 rotate: 90deg
-                color: black
+                color: values.$text-color
 
     .mailbox-action
         color: values.$link-color-dark

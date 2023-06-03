@@ -1,17 +1,70 @@
-$primary-color: #546E7A
-$primary-color-hover: #37474F
-$background-color: #FFFFFF
-$background-color-dark: #EEEEEE
-$link-color: #00ACC1
-$link-color-dark: #607D8B
-$button-color: #D3D3D3
-$button-color-hover: #BDBDBD
-$selected-color: #E0E0E0
-$border: 1px solid #E0E0E0
-$gray-text-color: #707070
-$red: #D32F2F
-$red-hover: #B71C1C
-$radius: 0.2em
+body
+    --primary-color: #546E7A
+    --primary-color-hover: #37474F
+    --accent-color: #CFD8DC
+    --background-color: #FFFFFF
+    --background-color-dark: #EEEEEE
+    --text-color: #212121
+    --tinted-text-color: #424242
+    --text-background: #BDBDBD
+    --link-color: #00ACC1
+    --link-color-dark: #607D8B
+    --input-background: #FFFFFF
+    --input-text-color: #212121
+    --placeholder-color: unset
+    --button-color: #D3D3D3
+    --button-color-hover: #BDBDBD
+    --selected-color: #E0E0E0
+    --border: 1px solid #E0E0E0
+    --gray-text-color: #707070
+    --red: #D32F2F
+    --red-hover: #B71C1C
+    --radius: 0.2em
+
+body.dark
+    --primary-color: #455A64
+    --primary-color-hover: #37474F
+    --accent-color: #455A64
+    --background-color: #1F1F1F
+    --background-color-dark: #191919
+    --text-color: #EEEEEE
+    --tinted-text-color: #D3D3D3
+    --text-background: #757575
+    --link-color: #00ACC1
+    --link-color-dark: #607D8B
+    --input-background: #2C2C2C
+    --input-text-color: #E0E0E0
+    --placeholder-color: #898989
+    --button-color: #D3D3D3
+    --button-color-hover: #BDBDBD
+    --selected-color: #3C3C3C
+    --border: 1px solid #303030
+    --gray-text-color: #757575
+    --red: #D32F2F
+    --red-hover: #B71C1C
+    --radius: 0.2em
+
+$primary-color: var(--primary-color)
+$primary-color-hover: var(--primary-color-hover)
+$accent-color: var(--accent-color)
+$background-color: var(--background-color)
+$background-color-dark: var(--background-color-dark)
+$text-color: var(--text-color)
+$tinted-text-color: var(--tinted-text-color)
+$text-background: var(--text-background)
+$link-color: var(--link-color)
+$link-color-dark: var(--link-color-dark)
+$input-background: var(--input-background)
+$input-text-color: var(--input-text-color)
+$placeholder-color: var(--placeholder-color)
+$button-color: var(--button-color)
+$button-color-hover: var(--button-color-hover)
+$selected-color: var(--selected-color)
+$border: var(--border)
+$gray-text-color: var(--gray-text-color)
+$red: var(--red)
+$red-hover: var(--red-hover)
+$radius: var(--radius)
 
 @mixin button-shadow
     box-shadow: 0px 1px 1px 0px rgba(80, 80, 80, 0.9)

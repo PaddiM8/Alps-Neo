@@ -1,6 +1,6 @@
 @use "../values" as values
 
-#trix-toolbar-1
+#trix-toolbar-1, #trix-toolbar-2
     margin-bottom: 0
 
 .textarea[input^='trix-input-']
@@ -22,7 +22,7 @@
     display: flex
     white-space: normal
     font-size: 0.9em
-    background-color: #EEEEEE
+    background-color: values.$input-background
     border-radius: values.$radius
     border-bottom-left-radius: 0
     border-bottom-right-radius: 0
@@ -31,10 +31,11 @@
     overflow: hidden
 
     button
-        background-color: #E0E0E0
+        background-color: values.$selected-color
         border: 0
         border-right: values.$border
         border-radius: 0
+        color: values.$text-color
         box-shadow: none
         -webkit-box-shadow: none
         -moz-box-shadow: none
@@ -43,4 +44,4 @@
             border-left: values.$border
 
         &.trix-active
-            background-color: #B0BEC5
+            background-color: values.$accent-color
