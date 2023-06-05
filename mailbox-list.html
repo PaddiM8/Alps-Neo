@@ -1,0 +1,29 @@
+{{ $mailboxName := .Mailbox.Name }}
+{{- if eq $mailboxName "INBOX" -}}
+    {{ $mailboxName = "Inbox" }}
+{{- end -}}
+<aside id="mailboxes" class="mailboxes" data-selected="{{ $mailboxName }}">
+    <button id="compose-button" class="compose-button">Compose</button>
+    <span class="mailbox-label">{{ .GlobalData.Username }}</span>
+    {{ with .CategorizedMailboxes }}
+    <div id="standard-mailboxes" class="standard-mailboxes">
+        {{ with .Common.Inbox }}{{ template "mailbox-link" . }}{{ end }}
+        {{ with .Common.Drafts }}{{ template "mailbox-link" . }}{{ end }}
+        {{ with .Common.Sent }}{{ template "mailbox-link" . }}{{ end }}
+        {{ with .Common.Junk }}{{ template "mailbox-link" . }}{{ end }}
+        {{ with .Common.Trash }}{{ template "mailbox-link" . }}{{ end }}
+        {{ with .Common.Archive }}{{ template "mailbox-link" . }}{{ end }}
+    </div>
+    <div>
+        <hr>
+        <div class="additional-mailboxes">
+            {{ if .Additional }}
+                {{ range .Additional }}
+                    {{ template "mailbox-link" . }}
+                {{ end }}
+            {{ end }}
+        </div>
+        <div id="create-folder" class="mailbox-action">Create folder</div>
+    </div>
+    {{ end }}
+</aside>

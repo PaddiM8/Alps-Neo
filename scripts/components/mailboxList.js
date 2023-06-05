@@ -1,17 +1,15 @@
-import * as compose from "./compose";
 import * as mailList from "./mailList";
-import * as pane from "./pane";
 import * as dialog from "./dialog";
 import * as toast from "./toast";
 import * as contextMenu from "./contextMenu";
 import * as dragDrop from "./dragDrop";
 import * as actions from "../actions";
 
-const mailboxes = document.getElementById("mailboxes");
-const createFolderButton = document.getElementById("create-folder");
-const initialMailbox = mailboxes.querySelector(".active").parentElement;
-const initialTitle = document.title;
-let activeMailbox = initialMailbox;
+let mailboxes;
+let createFolderButton;
+let initialMailbox;
+let activeMailbox;
+let initialTitle;
 const dragStatus = {
     lastDraggedOver: null,
     timeout: null,
@@ -264,7 +262,7 @@ function buildEntryTree(containerElement, tree) {
     }
 }
 
-function nestChildren() {
+export function nestChildren() {
     const folders = {};
     const additionalMailboxes = mailboxes.querySelector(".additional-mailboxes");
     const entries = additionalMailboxes.getElementsByClassName("mailbox-entry");
@@ -299,7 +297,13 @@ function expandParents(entry) {
     }
 }
 
-export async function init() {
+export async function init(loadMailList = true) {
+    mailboxes = document.getElementById("mailboxes");
+    createFolderButton = document.getElementById("create-folder");
+    initialMailbox = mailboxes.querySelector(".active").parentElement;
+    activeMailbox = initialMailbox;
+    initialTitle = document.title;
+
     nestChildren();
 
     createFolderButton.addEventListener("click", async () => {
@@ -378,7 +382,7 @@ export async function init() {
 
     expandParents(initialMailbox);
 
-    if (initialMailbox) {
+    if (loadMailList && initialMailbox) {
         await mailList.loadMailbox(getName(initialMailbox));
     }
 

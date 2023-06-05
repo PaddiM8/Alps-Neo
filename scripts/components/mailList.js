@@ -128,7 +128,7 @@ function clearSelection() {
     selectedEntries = [];
 }
 
-async function selectEntry(entry, remoteContent = showRemoteContent, clearSelectionFirst = true) {
+export async function selectEntry(entry, remoteContent = showRemoteContent, clearSelectionFirst = true) {
     enableActions();
 
     const uid = getUid(entry);
@@ -171,6 +171,13 @@ async function selectEntry(entry, remoteContent = showRemoteContent, clearSelect
     entry.classList.remove("unread");
 }
 
+export function selectEntryNoLoad(entry) {
+    if (!isEntrySelected(entry)) {
+        entry.classList.add("active");
+        selectedEntries.push(entry);
+    }
+}
+
 async function unselectEntry(entry) {
     entry.classList.remove("active");
     const index = selectedEntries.indexOf(entry);
@@ -181,20 +188,6 @@ async function unselectEntry(entry) {
     selectedEntries.splice(index, 1);
     if (selectedEntries.length > 0) {
         await selectEntry(selectedEntries[Math.max(0, index - 1)], showRemoteContent, false);
-    }
-}
-
-export async function reload(name) {
-    const previousSelected = selectedEntries;
-    mailList.innerHTML = "";
-    await loadMailbox(name);
-
-    if (previousSelected.length > 0) {
-        for (const selectionEntry of previousSelected) {
-            selectionEntry.classList.add("active");
-        }
-
-        await selectEntry(previousSelected[0]);
     }
 }
 
@@ -236,7 +229,7 @@ export async function removeSelected() {
     }
 }
 
-export async function loadMailbox(name) {
+export async function loadMailbox(name, selectFirst = true) {
     mailboxName = name;
     lastLoadedPage = null;
     lastLoadSuccessful = true;
@@ -244,11 +237,12 @@ export async function loadMailbox(name) {
 
     await loadEntries();
 
-    while (shouldLoadMore())
+    while (shouldLoadMore()) {
         await loadEntries();
+    }
 
     const mailDisplay = document.getElementById("mail-display");
-    if (mailList.children.length > 0 && mailDisplay.children.length == 0) {
+    if (selectFirst && mailList.children.length > 0 && mailDisplay.children.length == 0) {
         await selectEntry(mailList.firstElementChild);
     }
 }

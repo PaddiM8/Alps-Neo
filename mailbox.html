@@ -44,7 +44,8 @@
 {{ end }}
 
 {{ $pageQuery := index .GlobalData.URL.Query "page" }}
-{{ if ne (len $pageQuery) 1 }}
+{{ $mailboxesQuery := index .GlobalData.URL.Query "showMailboxes" }}
+{{ if and (ne (len $pageQuery) 1) (ne (len $mailboxesQuery) 1) }}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -72,35 +73,9 @@
         {{ template "settings.html" }}
     </main>
     <main id="mailbox" class="mailbox active">
-        {{ $mailboxName := .Mailbox.Name }}
-        {{- if eq $mailboxName "INBOX" -}}
-            {{ $mailboxName = "Inbox" }}
-        {{- end -}}
-        <aside id="mailboxes" class="mailboxes" data-selected="{{ $mailboxName }}">
-            <button id="compose-button" class="compose-button">Compose</button>
-            <span class="mailbox-label">{{ .GlobalData.Username }}</span>
-            {{ with .CategorizedMailboxes }}
-            <div id="standard-mailboxes" class="standard-mailboxes">
-                {{ with .Common.Inbox }}{{ template "mailbox-link" . }}{{ end }}
-                {{ with .Common.Drafts }}{{ template "mailbox-link" . }}{{ end }}
-                {{ with .Common.Sent }}{{ template "mailbox-link" . }}{{ end }}
-                {{ with .Common.Junk }}{{ template "mailbox-link" . }}{{ end }}
-                {{ with .Common.Trash }}{{ template "mailbox-link" . }}{{ end }}
-                {{ with .Common.Archive }}{{ template "mailbox-link" . }}{{ end }}
-            </div>
-            <div>
-                <hr>
-                <div class="additional-mailboxes">
-                    {{ if .Additional }}
-                        {{ range .Additional }}
-                            {{ template "mailbox-link" . }}
-                        {{ end }}
-                    {{ end }}
-                </div>
-                <div id="create-folder" class="mailbox-action">Create folder</div>
-            </div>
-            {{ end }}
-        </aside>
+        <div id="mailbox-list-container">
+            {{ template "mailbox-list.html" . }}
+        </div>
         <section class="middle">
             <div class="actions">
                 <span class="action seen fas fa-envelope" disabled></span>
@@ -156,7 +131,7 @@
 </body>
 
 </html>
-{{ else }}
+{{ else if eq (len $pageQuery) 1 }}
 {{ range .Messages }}
     {{ $classes := "item" }}
     {{ if not (.HasFlag "\\Seen") }}
@@ -205,4 +180,6 @@
     </span>
 </div>
 {{ end }}
+{{ else }}
+    {{ template "mailbox-list.html" . }}
 {{ end }}

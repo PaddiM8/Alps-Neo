@@ -1,8 +1,60 @@
+import * as refresh from "./refresh";
 import * as dialog from "./components/dialog";
 import * as mailbox from "./components/mailboxList";
 
+function isLoginRedirect(response) {
+    return response.redirected && response.url.split("?")[0].endsWith("/login");
+}
+
+async function promptLogin() {
+    const overlay = document.createElement("iframe");
+    overlay.style.position = "absolute";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+    overlay.style.width = "100%";
+    overlay.style.height = "100%";
+    overlay.src = "/login";
+    document.body.appendChild(overlay);
+
+    return new Promise((resolve, reject) => {
+        overlay.onload = async e => {
+            if (!overlay.contentWindow.location.pathname.startsWith("/login")) {
+                document.body.removeChild(overlay);
+                await refresh.go();
+                resolve();
+            }
+        };
+    });
+}
+
+export async function get(url) {
+    let response = await fetch(url);
+
+    if (isLoginRedirect(response)) {
+        await promptLogin();
+        response = get(url);
+    }
+
+    return response;
+}
+
+export async function post(url, formData) {
+    let response = await fetch(url, {
+        method: "POST",
+        credentials: "same-origin",
+        body: formData,
+    });
+
+    if (isLoginRedirect(response)) {
+        await promptLogin();
+        response = post(url, formData);
+    }
+
+    return response;
+}
+
 export async function getPreviousAttachments(mailbox, mailId, textPart) {
-    const result = await fetch(`/message/${encodeURIComponent(mailbox)}/${mailId}/forward?part=${textPart}`);
+    const result = await get(`/message/${encodeURIComponent(mailbox)}/${mailId}/forward?part=${textPart}`);
     const lines = (await result.text()).split("\n");
     const attachments = [];
     for (const line of lines) {
@@ -25,7 +77,7 @@ export async function getPreviousAttachments(mailbox, mailId, textPart) {
 }
 
 async function generateMessageId() {
-    const result = await fetch("/compose");
+    const result = await get("/compose");
     if (!result.ok) {
         return null;
     }
@@ -67,11 +119,7 @@ export async function sendMail(data) {
         url = `/message/${data.toForward}/forward`;
     }
 
-    const response = await fetch(url, {
-        method: "POST",
-        credentials: "same-origin",
-        body: formData,
-    });
+    const response = await post(url, formData);
 
     // Seems to redirect on success only. Checking status code
     // is not reliable, since it returns 200 even when when errors
@@ -96,11 +144,7 @@ export async function removeMail(uids, mailbox) {
         formData.append("uids", uid);
     }
 
-    const response = await fetch(`/message/${encodeURIComponent(mailbox)}/delete`, {
-        method: "POST",
-        credentials: "same-origin",
-        body: formData,
-    });
+    const response = await post(`/message/${encodeURIComponent(mailbox)}/delete`, formData);
 
     return response.status == 200;
 }
@@ -114,22 +158,14 @@ export async function markEmailIsRead(uids, mailbox, read) {
     formData.append("action", read ? "add" : "remove");
     formData.append("flags", "\\Seen");
 
-    await fetch(`/message/${encodeURIComponent(mailbox)}/flag`, {
-        method: "POST",
-        credentials: "same-origin",
-        body: formData,
-    });
+    await post(`/message/${encodeURIComponent(mailbox)}/flag`, formData);
 }
 
 export async function createMailbox(name) {
     const formData = new FormData();
     formData.append("name", name);
 
-    const response = await fetch(`/new-mailbox`, {
-        method: "POST",
-        credentials: "same-origin",
-        body: formData,
-    });
+    const response = await fetch(`/new-mailbox`, formData);
 
     return response.status == 200;
 }
@@ -143,17 +179,13 @@ export async function moveToMailbox(uids, name) {
     formData.append("to", name == "Inbox" ? "INBOX" : name);
 
     const url = `/message/${encodeURIComponent(mailbox.getName(mailbox.getSelected()))}/move`;
-    const response = await fetch(url, {
-        method: "POST",
-        credentials: "same-origin",
-        body: formData,
-    });
+    const response = await post(url, formData);
 
     return response.status == 200;
 }
 
 export async function getSettings() {
-    const response = await fetch("/user-settings");
+    const response = await get("/user-settings");
     const json = await response.text();
 
     return response.status == 200 && json
@@ -165,11 +197,7 @@ export async function setSettings(obj) {
     const formData = new FormData();
     formData.append("json", JSON.stringify(obj));
 
-    const response = await fetch(`/user-settings`, {
-        method: "POST",
-        credentials: "same-origin",
-        body: formData,
-    });
+    const response = await post(`/user-settings`, formData);
 
     return response.status == 200;
 }
