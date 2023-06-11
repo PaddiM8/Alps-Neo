@@ -20,7 +20,7 @@ async function promptLogin() {
         overlay.onload = async e => {
             if (!overlay.contentWindow.location.pathname.startsWith("/login")) {
                 document.body.removeChild(overlay);
-                await refresh.go();
+                await refresh.all();
                 resolve();
             }
         };

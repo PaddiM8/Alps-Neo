@@ -24,10 +24,3 @@ settings.init().then(x => {
     navigation.init();
     injection.init();
 });
-
-const composeButton = document.getElementById("compose-button");
-const composePane = document.getElementById("compose-pane");
-composeButton.addEventListener("click", () => {
-    compose.intoNewMail(composePane);
-    pane.show(composePane);
-});

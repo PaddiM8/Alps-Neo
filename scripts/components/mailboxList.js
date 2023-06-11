@@ -4,18 +4,20 @@ import * as toast from "./toast";
 import * as contextMenu from "./contextMenu";
 import * as dragDrop from "./dragDrop";
 import * as actions from "../actions";
+import * as compose from "./compose";
+import * as pane from "./pane";
 
 let mailboxes;
 let createFolderButton;
 let initialMailbox;
 let activeMailbox;
-let initialTitle;
+const initialTitle = document.title;
 const dragStatus = {
     lastDraggedOver: null,
     timeout: null,
 };
 
-function getMailboxByName(name) {
+export function getMailboxByName(name) {
     if (name == "INBOX") {
         name = "Inbox";
     }
@@ -50,13 +52,16 @@ window.onpopstate = async e => {
     }
 };
 
-async function selectMailbox(mailboxEntry) {
+export async function selectMailbox(mailboxEntry, doLoad = true) {
     activeMailbox.querySelector(".self").classList.remove("active");
     mailboxEntry.querySelector(".self").classList.add("active");
 
     const mailboxName = getName(mailboxEntry);
     mailboxes.setAttribute("data-selected", mailboxName);
-    await mailList.loadMailbox(mailboxName);
+
+    if (doLoad) {
+        await mailList.loadMailbox(mailboxName);
+    }
 
     activeMailbox = mailboxEntry;
     window.history.pushState(
@@ -302,9 +307,15 @@ export async function init(loadMailList = true) {
     createFolderButton = document.getElementById("create-folder");
     initialMailbox = mailboxes.querySelector(".active").parentElement;
     activeMailbox = initialMailbox;
-    initialTitle = document.title;
 
     nestChildren();
+
+    const composeButton = document.getElementById("compose-button");
+    const composePane = document.getElementById("compose-pane");
+    composeButton.addEventListener("click", () => {
+        compose.intoNewMail(composePane);
+        pane.show(composePane);
+    });
 
     createFolderButton.addEventListener("click", async () => {
         const name = await dialog.showInput("Create folder", "Choose a folder name", "Folder name...");
@@ -384,7 +395,6 @@ export async function init(loadMailList = true) {
 
     if (loadMailList && initialMailbox) {
         await mailList.loadMailbox(getName(initialMailbox));
+        await mailList.selectFirst();
     }
-
-    await mailList.selectFirst();
 }

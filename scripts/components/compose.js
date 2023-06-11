@@ -94,7 +94,7 @@ export function intoNewMail(to = null) {
     clearContext();
     pane.setTitle(composePane, "Write an Email");
 
-    if (to) {
+    if (to?.length > 0) {
         const toInput = composePane.querySelector(".input-to");
         multiInput.setValues(toInput, [to]);
     }

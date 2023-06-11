@@ -33,10 +33,8 @@ function handleScroll() {
     }
 }
 
-export async function go() {
-    const mailboxesHtml = await (await actions.get("/mailbox/INBOX?showMailboxes")).text();
-    document.getElementById("mailbox-list-container").innerHTML = mailboxesHtml;
-    mailboxList.init(false);
+export async function all() {
+    mailboxes();
 
     if (isMailListScrollNearTop()) {
         loadSelectedMailbox();
@@ -48,4 +46,14 @@ export async function go() {
         mailListElement.addEventListener("scroll", handleScroll);
         activeScrollWatcher = true;
     }
+}
+
+export async function mailboxes() {
+    const selectedMailbox = mailboxList.getName(mailboxList.getSelected());
+    const mailboxesHtml = await (await actions.get("/mailbox/INBOX?showMailboxes")).text();
+    document.getElementById("mailbox-list-container").innerHTML = mailboxesHtml;
+    mailboxList.init(false);
+
+    const mailboxEntry = mailboxList.getMailboxByName(selectedMailbox);
+    mailboxList.selectMailbox(mailboxEntry, false);
 }
