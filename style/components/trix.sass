@@ -14,34 +14,55 @@
     &:focus
         outline: 0
 
-.trix-button-group
+// The first selector is redundant, but the auto-formatter
+// gets confused without it
+.trix-button-group, trix-toolbar .trix-button-group
     display: flex
-    margin-right: 1em
+    border: 0
+    margin: 0
 
-.trix-button-row
+.trix-button-group--file-tools
+    display: none !important
+
+trix-toolbar .trix-button-group:not(:first-child)
+    margin-left: 1em
+
+.trix-button-group-spacer
+    display: none
+
+trix-toolbar .trix-button-row
     display: flex
+    width: fit-content
     white-space: normal
-    font-size: 0.9em
-    background-color: values.$input-background
-    border-radius: values.$radius
-    border-bottom-left-radius: 0
-    border-bottom-right-radius: 0
-    border: values.$border
+    justify-content: flex-start
+    background-color: values.$selected-color
+    border-top-left-radius: values.$radius
+    border-top-right-radius: values.$radius
     border-bottom: 0
     overflow: hidden
 
     button
+        display: block
+        width: 2.25em
         background-color: values.$selected-color
         border: 0
-        border-right: values.$border
         border-radius: 0
         color: values.$text-color
         box-shadow: none
+        font-size: 1em
+        font-weight: 500
+        padding: 0.4em
+        border-left: 0 !important
         -webkit-box-shadow: none
         -moz-box-shadow: none
 
-        &:first-child:not(.trix-button-group:first-child > *:first-child)
-            border-left: values.$border
+        &:first-child
+            border-top-left-radius: values.$radius
+            border-bottom-left-radius: values.$radius
+
+        &:last-child
+            border-top-right-radius: values.$radius
+            border-bottom-right-radius: values.$radius
 
         &.trix-active
             background-color: values.$accent-color

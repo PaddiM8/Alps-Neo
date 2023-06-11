@@ -3,6 +3,8 @@
 mkdir -p out/fonts
 cp -u fonts/*/webfonts/* out/fonts
 
+cp ./node_modules/trix/dist/trix.css out/
+
 esbuild="./node_modules/esbuild/bin/esbuild"
 echo $esbuild
 if [ "$1" = "dist" ]; then
