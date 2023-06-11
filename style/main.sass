@@ -170,3 +170,18 @@ blockquote
 
     .mail-display
         overflow-y: auto
+
+@media screen and (min-width: 1500px)
+    .preview
+        display: flex
+
+    .mail-display
+        flex-grow: 1
+
+    .compose-pane
+        flex-grow: 1
+        max-width: 70em
+        border-left: values.$border
+
+        .minimise
+            display: none
