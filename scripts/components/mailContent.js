@@ -45,8 +45,8 @@ function getBody() {
         : content.innerHTML;
 }
 
-function reply() {
-    compose.intoReply(
+async function reply() {
+    await compose.intoReply(
         getMailbox(),
         getUid(),
         getSender(),

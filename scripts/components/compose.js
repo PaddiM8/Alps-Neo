@@ -94,6 +94,19 @@ async function submit(kind = "normal") {
     }
 }
 
+async function promptIfChanged() {
+    if (pane.hasChanged(composePane)) {
+        const accept = await dialog.showYesNo("Discard Changes?", "Do you want to discard any existing changes in the compose panel to replace with new content?");
+        if (accept != "yes") {
+            return false;
+        }
+
+        pane.clear(composePane);
+    }
+
+    return true;
+}
+
 export function intoNewMail(to = null) {
     clearContext();
     pane.setTitle(composePane, "Write an Email");
@@ -112,7 +125,11 @@ export function intoNewMail(to = null) {
     }
 }
 
-export function intoReply(mailbox, mailId, to, from, subject, content) {
+export async function intoReply(mailbox, mailId, to, from, subject, content) {
+    if (!await promptIfChanged()) {
+        return;
+    }
+
     clearContext();
     context.inReplyTo = [mailbox, mailId].join("/");
     pane.setTitle(composePane, "Reply to Email");
@@ -128,6 +145,10 @@ export function intoReply(mailbox, mailId, to, from, subject, content) {
 }
 
 export async function intoForward(mailbox, mailId, textPart, date, from, to, subject, content) {
+    if (!await promptIfChanged()) {
+        return;
+    }
+
     clearContext();
     context.toForward = [mailbox, mailId].join("/");
     pane.setTitle(composePane, "Forward Email");

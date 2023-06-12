@@ -3,7 +3,13 @@ import * as fileDrop from "./fileDrop";
 let resizing = false;
 let lastSize = null;
 
+export function hasChanged(pane) {
+    return pane.getAttribute("data-changed") == "true";
+}
+
 export function clear(pane) {
+    pane.setAttribute("data-changed", "false");
+
     for (const input of pane.querySelectorAll("input, textarea, .textarea")) {
         if (input.classList.contains("no-clear")) {
             continue;
@@ -64,6 +70,19 @@ export function setTitle(pane, title) {
 }
 
 function initPane(pane) {
+    // Keep track of changes
+    pane.addEventListener("change", () => {
+        pane.setAttribute("data-changed", "true");
+    });
+
+    const trixEditor = pane.querySelector("[contenteditable]");
+    if (trixEditor) {
+        trixEditor.addEventListener("input", () => {
+            pane.setAttribute("data-changed", "true");
+        });
+    }
+
+    // Set up click events
     const closeButton = pane.querySelector(".close");
     closeButton.addEventListener("click", () => close(pane));
 
@@ -78,6 +97,7 @@ function initPane(pane) {
         }
     });
 
+    // Set up resizing
     const resizer = document.createElement("span");
     resizer.className = "resizer";
     header.prepend(resizer);
