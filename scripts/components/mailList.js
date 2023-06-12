@@ -8,6 +8,7 @@ import { getUnreadCountFromSelected, setUnreadCountFromSelected } from "./mailbo
 const mailList = document.getElementById("mail-list");
 const mailDisplay = document.getElementById("mail-display");
 const actionsPanel = document.querySelector(".middle .actions");
+const searchInput = actionsPanel.querySelector(".search");
 const shadowContent = document.createElement("div");
 const showRemoteContent = false;
 let selectedEntries = [];
@@ -15,8 +16,11 @@ let lastLoadedPage = null;
 let lastLoadSuccessful = true;
 let mailboxName = "Inbox";
 
-async function fetchPage(mailboxName, page) {
-    const entriesResult = await fetch(`/mailbox/${encodeURIComponent(mailboxName)}?page=${page}`);
+async function fetchPage(mailboxName, page, query) {
+    const queryString = query?.length > 0
+        ? `&query=${query}`
+        : "";
+    const entriesResult = await fetch(`/mailbox/${encodeURIComponent(mailboxName)}?page=${page}${queryString}`);
     if (entriesResult.status != 200) {
         lastLoadSuccessful = false;
     }
@@ -77,7 +81,8 @@ async function loadEntries() {
         : lastLoadedPage + 1;
 
     try {
-        const entries = (await fetchPage(mailboxName, page)).trim();
+        const query = searchInput.value;
+        const entries = (await fetchPage(mailboxName, page, query)).trim();
         if (!entries) {
             lastLoadSuccessful = false;
         }
@@ -229,11 +234,15 @@ export async function removeSelected() {
     }
 }
 
-export async function loadMailbox(name, selectFirst = true) {
-    mailboxName = name;
+function clear() {
     lastLoadedPage = null;
     lastLoadSuccessful = true;
     selectedEntries = [];
+}
+
+export async function loadMailbox(name, selectFirst = true) {
+    mailboxName = name;
+    clear();
 
     await loadEntries();
 
@@ -283,6 +292,30 @@ export async function init() {
         }
     });
 
+    let searchTimeout = null;
+    searchInput.addEventListener("keydown", async e => {
+        if (e.key == "Enter") {
+            clear();
+            await loadEntries();
+
+            return;
+        }
+
+        if (searchTimeout) {
+            clearTimeout(searchTimeout);
+        }
+
+        searchTimeout = setTimeout(async () => {
+            clear();
+            await loadEntries();
+        }, 750);
+    });
+    searchInput.addEventListener("input", async () => {
+        if (searchInput.value.length == 0) {
+            clear();
+            await loadEntries();
+        }
+    });
     actionsPanel.querySelector(".seen").addEventListener("click", async () => {
         await markIsRead(!isEntryRead(selectedEntries[0]));
     });
