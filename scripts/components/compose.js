@@ -47,6 +47,8 @@ async function submit(kind = "normal") {
     const from = composePane.querySelector(".input-from").value;
     const cc = multiInput.getValues(composePane.querySelector(".input-cc"));
     const subject = composePane.querySelector(".input-subject").value;
+    const submit = composePane.querySelector(".primary");
+    submit.setAttribute("disabled", "true");
 
     const messageElement = composePane.querySelector(".input-message")
     const html = `<html><body>${messageElement.value}</body></html>`;
@@ -81,10 +83,12 @@ async function submit(kind = "normal") {
         toast.show("Saved as draft.");
         fileDrop.clearUuids(attachmentArea);
         pane.close(composePane);
+        submit.removeAttribute("disabled");
     } else if (success) {
         toast.show("Email was sent.");
         fileDrop.clearUuids(attachmentArea);
         pane.close(composePane);
+        submit.removeAttribute("disabled");
     } else {
         showError();
     }
