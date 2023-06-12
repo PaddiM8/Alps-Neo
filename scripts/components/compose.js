@@ -47,7 +47,7 @@ async function submit(kind = "normal") {
     const from = composePane.querySelector(".input-from").value;
     const cc = multiInput.getValues(composePane.querySelector(".input-cc"));
     const subject = composePane.querySelector(".input-subject").value;
-    const submit = composePane.querySelector(".primary");
+    const submit = composePane.querySelector(".send");
     submit.setAttribute("disabled", "true");
 
     const messageElement = composePane.querySelector(".input-message")
