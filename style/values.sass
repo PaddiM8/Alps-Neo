@@ -20,6 +20,8 @@ body
     --red: #D32F2F
     --red-hover: #B71C1C
     --radius: 0.2em
+    --box-shadow-value: 80
+    --box-shadow-value-bright: 40
 
 body.dark
     --primary-color: #315363
@@ -43,6 +45,8 @@ body.dark
     --red: #D32F2F
     --red-hover: #B71C1C
     --radius: 0.2em
+    --box-shadow-value: 20
+    --box-shadow-value-bright: 20
 
 $primary-color: var(--primary-color)
 $primary-color-hover: var(--primary-color-hover)
@@ -65,13 +69,17 @@ $gray-text-color: var(--gray-text-color)
 $red: var(--red)
 $red-hover: var(--red-hover)
 $radius: var(--radius)
+$box-shadow-value: var(--box-shadow-value)
+$box-shadow-value-bright: var(--box-shadow-value-bright)
 
 @mixin button-shadow
-    box-shadow: 0px 1px 1px 0px rgba(80, 80, 80, 0.9)
-    -webkit-box-shadow: 0px 1px 1px 0px rgba(80, 80, 80, 0.9)
-    -moz-box-shadow: 0px 1px 1px 0px rgba(80, 80, 80, 0.9)
+    $shadow: 0px 1px 1px 0px rgba($box-shadow-value, $box-shadow-value, $box-shadow-value, 0.9)
+    box-shadow: $shadow
+    -webkit-box-shadow: $shadow
+    -moz-box-shadow: $shadow
 
 @mixin button-shadow-bright
-    box-shadow: 0px 1px 1px 0px rgba(40, 40, 40, 0.3)
-    -webkit-box-shadow: 0px 1px 1px 0px rgba(40, 40, 40, 0.3)
-    -moz-box-shadow: 0px 1px 1px 0px rgba(40, 40, 40, 0.3)
+    $shadow: 0px 1px 1px 0px rgba($box-shadow-value-bright, $box-shadow-value-bright, $box-shadow-value-bright, 0.3)
+    box-shadow: $shadow
+    -webkit-box-shadow: $shadow
+    -moz-box-shadow: $shadow
