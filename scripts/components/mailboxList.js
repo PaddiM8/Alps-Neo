@@ -389,7 +389,9 @@ export async function init(loadMailList = true) {
     }
 
     const unread = getUnreadCountFromMailbox("Inbox");
-    document.title = `(${unread}) ` + initialTitle;
+    if (unread > 0) {
+        document.title = `(${unread}) ` + initialTitle;
+    }
 
     expandParents(initialMailbox);
 
