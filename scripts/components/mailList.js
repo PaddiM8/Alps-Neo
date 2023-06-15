@@ -133,17 +133,20 @@ function clearSelection() {
     selectedEntries = [];
 }
 
-export async function selectEntry(entry, clearSelectionFirst = true) {
+export async function selectEntry(entry, clearSelectionFirst = true, overrideRemoteContent = false) {
     enableActions();
 
     const uid = getUid(entry);
-    const remoteContentString = settings.get("remote-content") ? "&allow-remote-resources=1" : "";
-    const mail = await fetch(`/message/${encodeURIComponent(mailboxName)}/${uid}?preferredContentType=text%2Fhtml${remoteContentString}`);
+    const remoteResources = overrideRemoteContent || settings.get()["remote_content"] ? "1" : "0";
+    const mail = await fetch(`/message/${encodeURIComponent(mailboxName)}/${uid}?preferredContentType=text%2Fhtml&allow-remote-resources=${remoteResources}`);
     mailDisplay.innerHTML = await mail.text();
-    const remoteContentButton = mailDisplay.querySelector(".remote-content-button");
-    if (remoteContentButton) {
-        remoteContentButton.onclick = () => {
-            selectEntry(entry, true, false);
+    const remoteContentWarning = mailDisplay.querySelector(".remote-content");
+    const remoteContentButton = remoteContentWarning?.querySelector(".remote-content-button");
+    if (overrideRemoteContent && remoteContentWarning) {
+        remoteContentWarning.parentElement.removeChild(remoteContentWarning);
+    } else if (remoteContentButton) {
+        remoteContentButton.onclick = async () => {
+            await selectEntry(entry, false, true);
         };
     }
 

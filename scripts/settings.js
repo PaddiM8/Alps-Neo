@@ -14,7 +14,7 @@ async function load() {
         document.getElementById("theme").value = settings.theme;
     }
 
-    if ("remote-content" in settings) {
+    if ("remote_content" in settings) {
         document.getElementById("remote-content").value = settings.remote_content ? "yes" : "no";
     }
 
