@@ -14,6 +14,10 @@ async function load() {
         document.getElementById("theme").value = settings.theme;
     }
 
+    if ("remote-content" in settings) {
+        document.getElementById("remote-content").value = settings.remote_content ? "yes" : "no";
+    }
+
     if ("signature" in settings) {
         document.getElementById("signature").value = settings.signature;
     }
@@ -22,6 +26,7 @@ async function load() {
 async function save() {
     settings = {
         theme: document.getElementById("theme").value,
+        remote_content: document.getElementById("remote-content").value == "yes",
         signature: document.getElementById("signature").value,
     };
 

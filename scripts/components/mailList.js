@@ -3,6 +3,7 @@ import * as actions from "../actions";
 import * as moveMenu from "./moveMenu";
 import * as contextMenu from "./contextMenu";
 import * as dragDrop from "./dragDrop";
+import * as settings from "../settings";
 import { getUnreadCountFromSelected, setUnreadCountFromSelected } from "./mailboxList";
 
 const mailList = document.getElementById("mail-list");
@@ -10,7 +11,6 @@ const mailDisplay = document.getElementById("mail-display");
 const actionsPanel = document.querySelector(".middle .actions");
 const searchInput = actionsPanel.querySelector(".search");
 const shadowContent = document.createElement("div");
-const showRemoteContent = false;
 let selectedEntries = [];
 let lastLoadedPage = null;
 let lastLoadSuccessful = true;
@@ -38,7 +38,7 @@ function setUpEntry(entry) {
         }
 
         if (!isEntrySelected(entry)) {
-            await selectEntry(entry, showRemoteContent, !e.ctrlKey);
+            await selectEntry(entry, !e.ctrlKey);
         }
     };
 
@@ -133,11 +133,11 @@ function clearSelection() {
     selectedEntries = [];
 }
 
-export async function selectEntry(entry, remoteContent = showRemoteContent, clearSelectionFirst = true) {
+export async function selectEntry(entry, clearSelectionFirst = true) {
     enableActions();
 
     const uid = getUid(entry);
-    const remoteContentString = remoteContent ? "&allow-remote-resources=1" : "";
+    const remoteContentString = settings.get("remote-content") ? "&allow-remote-resources=1" : "";
     const mail = await fetch(`/message/${encodeURIComponent(mailboxName)}/${uid}?preferredContentType=text%2Fhtml${remoteContentString}`);
     mailDisplay.innerHTML = await mail.text();
     const remoteContentButton = mailDisplay.querySelector(".remote-content-button");
@@ -192,7 +192,7 @@ async function unselectEntry(entry) {
 
     selectedEntries.splice(index, 1);
     if (selectedEntries.length > 0) {
-        await selectEntry(selectedEntries[Math.max(0, index - 1)], showRemoteContent, false);
+        await selectEntry(selectedEntries[Math.max(0, index - 1)], false);
     }
 }
 
