@@ -1,5 +1,6 @@
 import * as refresh from "./refresh";
 import * as mailboxList from "./components/mailboxList";
+import * as notifications from "./notifications";
 import ReconnectingWebSocket from "reconnecting-websocket";
 
 export function init() {
@@ -14,6 +15,8 @@ export function init() {
         }
 
         if (type == "mailbox" && value == mailboxList.getName(mailboxList.getSelected())) {
+            notifications.notify("Mail received.");
+
             await refresh.all();
         } else if (type == "mailbox") {
             await refresh.mailboxes();

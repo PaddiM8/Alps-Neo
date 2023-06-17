@@ -9,6 +9,7 @@ import * as multiInput from "./components/multiInput";
 import * as pane from "./components/pane";
 import * as navigation from "./components/navigation";
 import * as injection from "./injection";
+import * as notifications from "./notifications";
 import Trix from "trix";
 
 settings.init().then(() => {
@@ -23,4 +24,5 @@ settings.init().then(() => {
     pane.init();
     navigation.init();
     injection.init();
+    notifications.init();
 });
