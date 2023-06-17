@@ -27,8 +27,13 @@ async function promptLogin() {
     });
 }
 
-export async function get(url) {
-    let response = await fetch(url);
+export async function get(url, cache = true) {
+    const options = {};
+    if (!cache) {
+        options.cache = "no-store";
+    }
+
+    let response = await fetch(url, options);
 
     if (isLoginRedirect(response)) {
         await promptLogin();
@@ -185,7 +190,7 @@ export async function moveToMailbox(uids, name) {
 }
 
 export async function getSettings() {
-    const response = await get("/user-settings");
+    const response = await get("/user-settings", cache = false);
     const json = await response.text();
 
     return response.status == 200 && json
