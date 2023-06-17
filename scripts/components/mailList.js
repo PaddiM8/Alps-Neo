@@ -152,9 +152,10 @@ DOMPurify.addHook("afterSanitizeAttributes", node => {
         }
 
         purify.hasRemoteContent = true;
-        const url = settings.get()["proxy_images"]
-            ? "/proxy?allow-http=1&src=" + encodeURIComponent(node.getAttribute(attribute))
-            : node.getAttribute(attribute);
+        const value = node.getAttribute(attribute);
+        const url = settings.get()["proxy_images"] && !value.startsWith("/")
+            ? "/proxy?allow-http=1&src=" + encodeURIComponent(value)
+            : value;
 
         node.setAttribute(
             attribute,
