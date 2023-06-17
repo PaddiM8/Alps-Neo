@@ -158,10 +158,9 @@
 <div class="item mail-entry {{ $classes }}"
      data-uid="{{ .Uid }}"
      {{ if ne $selectedPart -1 }}data-part="{{ $selectedPart }}" {{ end }}>
-    {{ if .HasFlag "\\Answered" }}<span class="replied">↩</span>{{ end }}
-    {{ if .HasFlag "$Forwarded" }}<span class="forwarded">↪</span>{{ end }}
-
     <span class="sender">
+        {{ if .HasFlag "\\Answered" }}↩{{ end }}
+        {{ if .HasFlag "$Forwarded" }}↪{{ end }}
         {{ range .Envelope.From }}
             {{ if .PersonalName }}
                 {{ .PersonalName }}
