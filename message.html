@@ -63,7 +63,7 @@
             <section class="attachments">
                 {{ range .Message.Attachments }}
                     <a class="attachment-button"
-                       {{ if .IsText }}href="?part={{ .PathString }}"
+                       {{ if .IsText }}href="{{ $.Message.URL }}?part={{ .PathString }}"
                        {{ else }}href="{{ $.Message.URL }}/raw?part={{ .PathString }}"{{end}}
                        data-mime="{{ .MIMEType }}">
                         <div class="attachment-inner">
