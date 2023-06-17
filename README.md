@@ -2,6 +2,8 @@
 
 Alps Neo is a theme and a fork of the [Alps webmail client](https://git.sr.ht/~migadu/alps), with a modern design.
 
+![](preview.png)
+
 ## Prerequisites
 
 * node
