@@ -5,6 +5,7 @@ import * as contextMenu from "./contextMenu";
 import * as dragDrop from "./dragDrop";
 import * as settings from "../settings";
 import { getUnreadCountFromSelected, setUnreadCountFromSelected } from "./mailboxList";
+import * as DOMPurify from "dompurify";
 
 const mailList = document.getElementById("mail-list");
 const mailDisplay = document.getElementById("mail-display");
@@ -133,14 +134,69 @@ function clearSelection() {
     selectedEntries = [];
 }
 
+const purify = {
+    attributesToProxy: ["href", "src", "action"],
+    allowRemoteContent: true,
+    hasRemoteContent: false,
+};
+DOMPurify.addHook("afterSanitizeAttributes", (node) => {
+    purify.hasRemoteContent = false;
+
+    for (const attribute of purify.attributesToProxy) {
+        if (!node.hasAttribute(attribute)) {
+            continue
+        }
+
+        purify.hasRemoteContent = true;
+        const url = settings.get()["proxy_images"]
+            ? "/proxy?allow-http=1&src=" + encodeURIComponent(node.getAttribute(attribute))
+            : node.getAttribute(attribute);
+
+        node.setAttribute(
+            attribute,
+            purify.allowRemoteContent ? url : ""
+        );
+    }
+});
+
+function setAllowRemoteContent(allowRemoteContent) {
+    purify.allowRemoteContent = allowRemoteContent;
+}
+
+function sanitizerBlockedContent() {
+    return purify.hasRemoteContent && !purify.allowRemoteContent;
+}
+
 export async function selectEntry(entry, clearSelectionFirst = true, overrideRemoteContent = false) {
     enableActions();
 
     const uid = getUid(entry);
-    const remoteResources = overrideRemoteContent || settings.get()["remote_content"] ? "1" : "0";
-    const mail = await fetch(`/message/${encodeURIComponent(mailboxName)}/${uid}?preferredContentType=text%2Fhtml&allow-remote-resources=${remoteResources}`);
-    mailDisplay.innerHTML = await mail.text();
+    const mail = await fetch(`/message/${encodeURIComponent(mailboxName)}/${uid}?preferredContentType=text%2Fhtml&sanitize=0`);
+    var dom = document.implementation.createHTMLDocument();
+    dom.body.innerHTML = await mail.text();
+    const iframe = dom.querySelector("iframe");
+    if (iframe) {
+        setAllowRemoteContent(overrideRemoteContent || settings.get()["remote_content"]);
+        const sanitized = DOMPurify.sanitize(iframe.srcdoc);
+        shadowContent.innerHTML = sanitized;
+
+        const mailBody = iframe.parentNode;
+        mailBody.removeChild(iframe);
+        const shadow = mailBody.attachShadow({ mode: "open" });
+        shadow.appendChild(shadowContent);
+        mailBody.classList.add("html");
+    }
+
+    mailDisplay.innerHTML = "";
+    for (const child of dom.body.children) {
+        mailDisplay.appendChild(child);
+    }
+
     const remoteContentWarning = mailDisplay.querySelector(".remote-content");
+    if (sanitizerBlockedContent()) {
+        remoteContentWarning.style.display = "";
+    }
+
     const remoteContentButton = remoteContentWarning?.querySelector(".remote-content-button");
     if (overrideRemoteContent && remoteContentWarning) {
         remoteContentWarning.parentElement.removeChild(remoteContentWarning);
@@ -148,17 +204,6 @@ export async function selectEntry(entry, clearSelectionFirst = true, overrideRem
         remoteContentButton.onclick = async () => {
             await selectEntry(entry, false, true);
         };
-    }
-
-    const iframe = mailDisplay.querySelector("iframe");
-    if (iframe) {
-        const content = iframe.srcdoc;
-        shadowContent.innerHTML = content;
-
-        const mailBody = iframe.parentNode;
-        mailBody.removeChild(iframe)
-        const shadow = mailBody.attachShadow({ mode: "open" });
-        shadow.appendChild(shadowContent);
     }
 
     mailContent.init();

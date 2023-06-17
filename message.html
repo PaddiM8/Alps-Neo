@@ -54,12 +54,10 @@
     </section>
 
     <section class="mail-body">
-        {{ if and .Extra.HasRemoteResources (not .Extra.RemoteResourcesAllowed) }}
-            <div class="remote-content">
-                <span>This message contains remote content, such as external images.</span>
-                <a class="remote-content-button" href="#">Load remote content</a>
-            </div>
-        {{end}}
+        <div class="remote-content" style="display: none">
+            <span>This message contains remote content, such as external images.</span>
+            <a class="remote-content-button" href="#">Load remote content</a>
+        </div>
         {{ $attachments := .Message.Attachments }}
         {{ if $attachments }}
             <section class="attachments">

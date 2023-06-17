@@ -18,6 +18,10 @@ async function load() {
         document.getElementById("remote-content").value = settings.remote_content ? "yes" : "no";
     }
 
+    if ("proxy_images" in settings) {
+        document.getElementById("proxy-images").value = settings.proxy_images ? "yes" : "no";
+    }
+
     if ("signature" in settings) {
         document.getElementById("signature").value = settings.signature;
     }
@@ -27,6 +31,7 @@ async function save() {
     settings = {
         theme: document.getElementById("theme").value,
         remote_content: document.getElementById("remote-content").value == "yes",
+        proxy_images: document.getElementById("proxy-images").value == "yes",
         signature: document.getElementById("signature").value,
     };
 

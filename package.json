@@ -11,6 +11,7 @@
     "author": "PaddiM8",
     "license": "MIT",
     "dependencies": {
+        "dompurify": "^3.0.3",
         "esbuild": "0.17.14",
         "reconnecting-websocket": "^4.4.0",
         "trix": "^2.0.5"
