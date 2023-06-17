@@ -139,8 +139,10 @@ const purify = {
     allowRemoteContent: true,
     hasRemoteContent: false,
 };
-DOMPurify.addHook("afterSanitizeAttributes", (node) => {
+DOMPurify.addHook("afterSanitizeAttributes", node => {
     purify.hasRemoteContent = false;
+
+    node.setAttribute("target", "_blank");
 
     for (const attribute of purify.attributesToProxy) {
         if (!node.hasAttribute(attribute)) {

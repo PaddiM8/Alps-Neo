@@ -16,5 +16,3 @@ export function show(text, level = "info", timeShow = 3250) {
         }, 800)
     }, timeShow);
 }
-
-show("This is a test.", "info", 325000);
