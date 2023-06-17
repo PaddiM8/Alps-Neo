@@ -142,7 +142,9 @@ const purify = {
 DOMPurify.addHook("afterSanitizeAttributes", node => {
     purify.hasRemoteContent = false;
 
-    node.setAttribute("target", "_blank");
+    if (node.tagName == "a") {
+        node.setAttribute("target", "_blank");
+    }
 
     for (const attribute of purify.attributesToProxy) {
         if (!node.hasAttribute(attribute)) {
