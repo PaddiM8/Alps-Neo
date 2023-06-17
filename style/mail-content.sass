@@ -70,18 +70,18 @@
         display: flex
         align-items: center
         width: fit-content
-        background-color: values.$button-color
+        background-color: values.$button-color-dark
         padding: 0.4em 0.8em
         margin-right: 0.4em
         margin-bottom: 0.4em
         font-size: 0.9em
         border-radius: values.$radius
-        color: inherit
+        color: values.$button-text-dark-color
         text-decoration: none
         cursor: pointer
 
         &:hover
-            background-color: values.$button-color-hover
+            background-color: values.$button-color-dark-hover
 
     .attachment-inner
         display: flex
@@ -99,6 +99,12 @@
 
     .content
         overflow: auto
+
+        &.html
+            color: black
+            background-color: white
+            border-radius: values.$radius
+            padding: 0.4em
 
     .content pre
         white-space: pre-wrap
