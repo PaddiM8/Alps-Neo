@@ -144,6 +144,10 @@ export async function removeMail(uids, mailbox) {
         return false;
     }
 
+    if (!Array.isArray(uids)) {
+        uids = [uids];
+    }
+
     const formData = new FormData();
     for (const uid of uids) {
         formData.append("uids", uid);

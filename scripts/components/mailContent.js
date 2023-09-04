@@ -72,7 +72,10 @@ async function forward() {
 }
 
 async function remove() {
-    await actions.removeMail(getUid(), getMailbox());
+    const success = await actions.removeMail(getUid(), getMailbox());
+    if (success) {
+        await mailList.removeSelected();
+    }
 }
 
 function move(e) {
