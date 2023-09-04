@@ -170,7 +170,7 @@ export async function createMailbox(name) {
     const formData = new FormData();
     formData.append("name", name);
 
-    const response = await fetch(`/new-mailbox`, formData);
+    const response = await post("/new-mailbox", formData);
 
     return response.status == 200;
 }
